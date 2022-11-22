@@ -1,13 +1,4 @@
-function validateData() {
-
-    const shouldAlert = (data === null || Object.keys(data).length < 1)
-
-    if (shouldAlert) {
-
-        alert("Der er sket en fejl på vores side, prøv igen senere!")
-    }
+for (let i = 0; i < entries.length; i++) {
+	
+	console.log(entries[i].title);
 }
-
-validateData()
-
-console.log('Data', data)

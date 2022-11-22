@@ -1,5 +1,6 @@
 package me.casper.wexo;
 
+import com.google.gson.JsonSyntaxException;
 import me.casper.util.Time;
 import me.casper.wexo.api.REST;
 
@@ -7,9 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
 
 @SpringBootApplication
 public class WEXOApplication {
@@ -20,20 +18,17 @@ public class WEXOApplication {
 	
 	public static void main(String[] args) {
 		
-		// TODO: If the Fallback Data.json file is empty on startup, wait for the data to be fetched before starting web server.
-		// TODO: There's 10.000 items in the API, so we need to fetch them in batches.
-		// TODO: We can fetch 1.000 items per request, so we need to make 10 requests.
-		
 		// Fetch all the shows every 15 minutes on a separate thread.
 		Thread updateThread = new Thread(() -> {
 			
-			rest = new REST();
-			
-			final int updateInterval = 900_000; // 15 minutes in milliseconds.
-			
-			// Wait 1 second for the logger to be initialized.
+			// Wait 1 second for the logger to be initialized:
 			try { Thread.sleep(1_000); }
 			catch (InterruptedException ignored) { }
+			
+			// 15 minutes in milliseconds:
+			final int updateInterval = 900_000;
+			
+			rest = new REST("/api/data/Fallback Cache.json");
 			
 			while (true) {
 				
@@ -41,19 +36,27 @@ public class WEXOApplication {
 				
 				try {
 					
-					LOGGER.info("Updating show data...");
+					LOGGER.info("Updating cache data...");
 					
-					rest.fetchLatestData(1, 100);
+					for (int i = 1; i < REST.TOTAL_ITEMS; i += REST.MAX_ITEMS_PER_REQUEST) {
+						
+						final int end = i + REST.MAX_ITEMS_PER_REQUEST;
+						
+						LOGGER.info("Fetching item indicies from " + i + " to " + end + "...");
+						
+						rest.fetch(i, end);
+						rest.write();
+					}
 					
-					LOGGER.info("Show data updated in {}!", Time.formatMillis(System.currentTimeMillis() - startTime));
+					LOGGER.info("Cache data updated in {}!", Time.formatMillis(System.currentTimeMillis() - startTime));
 					
 					Thread.sleep(updateInterval);
 					
-				} catch (IOException | InterruptedException | NullPointerException e) {
+				} catch (NullPointerException | JsonSyntaxException | ClassCastException e) {
 					
-					LOGGER.error("Failed to update JSON data! (Error Message: {})", e.getMessage());
+					LOGGER.error("Failed to update cache data!", e);
 					
-				} catch (URISyntaxException e) {
+				} catch (InterruptedException e) {
 					
 					throw new RuntimeException(e);
 				}
@@ -61,8 +64,7 @@ public class WEXOApplication {
 		});
 		
 		updateThread.setName("Update Thread");
-		updateThread.setUncaughtExceptionHandler((t, e) -> LOGGER.error("Uncaught exception in thread {}! (Error Message: {})", t.getName(), e.getMessage()));
-		updateThread.setPriority(Thread.MIN_PRIORITY);
+		updateThread.setUncaughtExceptionHandler((t, e) -> LOGGER.error("Uncaught exception in thread {}, the thread has been stopped!", t.getName(), e));
 		updateThread.setDaemon(true);
 		updateThread.start();
 		
