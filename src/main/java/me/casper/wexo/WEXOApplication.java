@@ -36,11 +36,20 @@ public class WEXOApplication {
 				
 				try {
 					
+					if (rest.getLastUpdated() > System.currentTimeMillis() - updateInterval) {
+						
+						LOGGER.info("The cache is up to date, skipping update.");
+						
+						Thread.sleep(updateInterval);
+						
+						continue;
+					}
+					
 					LOGGER.info("Updating cache data...");
 					
 					for (int i = 1; i < REST.TOTAL_ITEMS; i += REST.MAX_ITEMS_PER_REQUEST) {
 						
-						final int end = i + REST.MAX_ITEMS_PER_REQUEST;
+						final int end = i + REST.MAX_ITEMS_PER_REQUEST - 1;
 						
 						LOGGER.info("Fetching item indicies from " + i + " to " + end + "...");
 						

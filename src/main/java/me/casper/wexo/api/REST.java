@@ -4,16 +4,15 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.zip.GZIPInputStream;
 
 import static me.casper.wexo.WEXOApplication.LOGGER;
@@ -28,31 +27,33 @@ public class REST {
 	private final ArrayList<Entry> activeCache = new ArrayList<>();
 	private final ArrayList<Entry> fallbackCache = new ArrayList<>();
 	
+	private long lastUpdated = 0;
+	
 	private final Path cachePath;
 	
-	public REST(String path) {
+	public REST(String rawPath) {
 		
-		// Check if we have data in the fallback cache on disk.
-		// If we do, load it into the active cache.
-		// If we don't, load the data from the API into the active cache.
+		/*
+		 Check if we have data in the fallback cache on disk.
+		 If we do, load it into the active cache.
+		 If we don't, load the data from the API into the active cache.
+		 */
 		Path finalPath = null;
 		
 		try {
 			
-			Path cachePath = Path.of(Objects.requireNonNull(REST.class.getResource(path), "Cache path is null!").toURI());
+			finalPath = Path.of(getClass().getResource(rawPath).toURI());
 			
-			if (!Files.exists(cachePath)) {
+			if (!Files.exists(finalPath)) {
 				
 				LOGGER.warn("Cache file does not exist! Creating it...");
 				
-				Files.createFile(cachePath);
+				Files.createFile(finalPath);
 				
 				LOGGER.warn("Cache file created!");
 			}
 			
-			finalPath = cachePath;
-			
-		} catch (IOException | URISyntaxException | NullPointerException e) {
+		} catch (Exception e) {
 			
 			LOGGER.error("Failed to load fallback cache path!", e);
 			
@@ -80,6 +81,7 @@ public class REST {
 			}
 			
 			JsonObject object = gson.fromJson(data, JsonObject.class);
+			JsonPrimitive lastUpdated = object.getAsJsonPrimitive("lastUpdated");
 			JsonArray entries = object.getAsJsonArray("entries");
 			
 			for (int i = 0; i < entries.size(); i++) {
@@ -99,7 +101,9 @@ public class REST {
 				fallbackCache.add(entry);
 			}
 			
-		} catch (IOException | NullPointerException e) {
+			this.lastUpdated = lastUpdated.getAsLong();
+			
+		} catch (Exception e) {
 			
 			LOGGER.error("Failed to parse cache data from disk!", e);
 			
@@ -148,6 +152,13 @@ public class REST {
 			
 			JsonArray entries = new Gson().fromJson(data.toString(), JsonObject.class).getAsJsonArray("entries");
 			
+			if (entries == null || entries.isEmpty()) {
+				
+				LOGGER.error("Failed to fetch data from API! (No Entries Found)");
+				
+				return;
+			}
+			
 			for (int i = 0; i < entries.size(); i++) {
 				
 				JsonObject entryObject = entries.get(i).getAsJsonObject();
@@ -160,7 +171,7 @@ public class REST {
 				activeCache.add(entry);
 			}
 			
-		} catch (IOException | NullPointerException e) {
+		} catch (Exception e) {
 			
 			LOGGER.error("Failed to fetch data from API!", e);
 		}
@@ -176,12 +187,17 @@ public class REST {
 		if (tree == null || tree.isJsonNull())
 			return;
 		
+		final long now = System.currentTimeMillis();
+		
 		JsonObject wrapper = new JsonObject();
+		wrapper.add("lastUpdated", new JsonPrimitive(now));
 		wrapper.add("entries", tree);
 		
 		try {
 			
 			Files.write(cachePath, gson.toJson(wrapper).getBytes());
+			
+			lastUpdated = now;
 			
 		} catch (IOException e) {
 			
@@ -196,11 +212,19 @@ public class REST {
 	
 	public ArrayList<Entry> getActiveCache(int from, int to) {
 		
+		// Make sure the range is valid.
+		if (from < 0 || to < 0 || from > to)
+			return null;
+		
+		// Make sure the range is within the cache.
+		to = Math.min(to, activeCache.size());
+		
 		ArrayList<Entry> cache = new ArrayList<>();
 		
 		for (int i = from; i < to; i++) {
 			
 			cache.add(activeCache.get(i));
+
 		}
 		
 		return cache;
@@ -211,12 +235,17 @@ public class REST {
 		return fallbackCache;
 	}
 	
+	public long getLastUpdated() {
+		
+		return lastUpdated;
+	}
+	
 	public Path getCachePath() {
 		
 		return cachePath;
 	}
 	
-	private Entry defineEntry(JsonObject entry) throws NullPointerException {
+	private Entry defineEntry(JsonObject entry) {
 		
 		JsonElement rawTitle = entry.get("title");
 		JsonElement rawDescription = entry.get("description");
@@ -331,7 +360,7 @@ public class REST {
 		return new Entry(title, description, programType, releaseYear, covers, backdrops, genres, actors, directors, trailers);
 	}
 	
-	private Entry defineCachedEntry(JsonObject entry) throws NullPointerException {
+	private Entry defineCachedEntry(JsonObject entry) {
 		
 		JsonElement rawTitle = entry.get("title");
 		JsonElement rawDescription = entry.get("description");

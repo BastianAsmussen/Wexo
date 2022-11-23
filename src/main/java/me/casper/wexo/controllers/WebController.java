@@ -16,8 +16,15 @@ public class WebController {
 		
 		ArrayList<Entry> entries = WEXOApplication.getRestInstance().getActiveCache(1, 100);
 		
-		model.addAttribute("entries", entries);
+		if (entries == null || entries.isEmpty()) {
+			
+			model.addAttribute("cause", "Der blev ikke fundet noget data i vores system!");
+			
+			return "error";
+		}
 		
-		return "main/index.html";
+		model.addAttribute("entries", WEXOApplication.getRestInstance().getActiveCache(1, 100));
+		
+		return "index";
 	}
 }
