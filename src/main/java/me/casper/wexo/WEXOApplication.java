@@ -3,7 +3,6 @@ package me.casper.wexo;
 import com.google.gson.JsonSyntaxException;
 import me.casper.util.Time;
 import me.casper.wexo.api.REST;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -18,17 +17,30 @@ public class WEXOApplication {
 	
 	public static void main(String[] args) {
 		
+		if (args.length < 1) {
+			
+			System.err.println("Please provide a path to store the cache in!");
+			
+			return;
+		}
+		
 		// Fetch all the shows every 15 minutes on a separate thread.
 		Thread updateThread = new Thread(() -> {
 			
-			// Wait 1 second for the logger to be initialized:
-			try { Thread.sleep(1_000); }
-			catch (InterruptedException ignored) { }
+			// Wait 1 second for the logger to be initialized.
+			try {
+				
+				Thread.sleep(1_000);
+				
+			} catch (InterruptedException ignored) {
+				
+				throw new RuntimeException("The update thread was interrupted!");
+			}
 			
-			// 15 minutes in milliseconds:
+			// 15 minutes in milliseconds.
 			final int updateInterval = 900_000;
 			
-			rest = new REST("/api/data/Fallback Cache.json");
+			rest = new REST(args[0]);
 			
 			while (true) {
 				
@@ -36,9 +48,10 @@ public class WEXOApplication {
 				
 				try {
 					
-					if (rest.getLastUpdated() > System.currentTimeMillis() - updateInterval) {
+					// If our cache is up-to-date, and the cache size isn't less than the total items, we don't need to update it.
+					if (rest.getLastUpdated() > (System.currentTimeMillis() - updateInterval) && !rest.getActiveCache().isEmpty()) {
 						
-						LOGGER.info("The cache is up to date, skipping update.");
+						LOGGER.info("The cache is up to date, skipping update...");
 						
 						Thread.sleep(updateInterval);
 						
@@ -51,13 +64,14 @@ public class WEXOApplication {
 						
 						final int end = i + REST.MAX_ITEMS_PER_REQUEST - 1;
 						
-						LOGGER.info("Fetching item indicies from " + i + " to " + end + "...");
+						LOGGER.info("Fetching item indicies from {} to {}...", i, end);
 						
+						// Fetch the items from the API and write them to the cache.
 						rest.fetch(i, end);
 						rest.write();
 					}
 					
-					LOGGER.info("Cache data updated in {}!", Time.formatMillis(System.currentTimeMillis() - startTime));
+					LOGGER.info("Cache data updated in {}!", Time.formatTime(System.currentTimeMillis() - startTime));
 					
 					Thread.sleep(updateInterval);
 					
@@ -67,7 +81,7 @@ public class WEXOApplication {
 					
 				} catch (InterruptedException e) {
 					
-					throw new RuntimeException(e);
+					throw new RuntimeException("The update thread was interrupted!");
 				}
 			}
 		});

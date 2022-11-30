@@ -1,18 +1,17 @@
 package me.casper.wexo.api;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import com.google.gson.*;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.zip.GZIPInputStream;
 
 import static me.casper.wexo.WEXOApplication.LOGGER;
@@ -26,77 +25,61 @@ public class REST {
 	
 	private final ArrayList<Entry> activeCache = new ArrayList<>();
 	private final ArrayList<Entry> fallbackCache = new ArrayList<>();
-	
+	private final File cacheFile;
 	private long lastUpdated = 0;
 	
-	private final Path cachePath;
-	
-	public REST(String rawPath) {
+	public REST(String cachePath) {
 		
-		/*
-		 Check if we have data in the fallback cache on disk.
-		 If we do, load it into the active cache.
-		 If we don't, load the data from the API into the active cache.
-		 */
-		Path finalPath = null;
+		cacheFile = new File(cachePath);
 		
 		try {
 			
-			finalPath = Path.of(getClass().getResource(rawPath).toURI());
-			
-			if (!Files.exists(finalPath)) {
+			// If the cache file doesn't exist, create it.
+			if (!cacheFile.exists()) {
 				
-				LOGGER.warn("Cache file does not exist! Creating it...");
+				LOGGER.warn("Cache file doesn't exist, creating it...");
 				
-				Files.createFile(finalPath);
+				// Make sure the parent directories exist.
+				cacheFile.getParentFile().mkdirs();
 				
-				LOGGER.warn("Cache file created!");
+				if (!cacheFile.createNewFile()) {
+					
+					LOGGER.error("Failed to create cache file, exiting...");
+					
+					System.exit(1);
+				}
 			}
 			
-		} catch (Exception e) {
-			
-			LOGGER.error("Failed to load fallback cache path!", e);
-			
-			return;
-			
-		} finally {
-			
-			this.cachePath = finalPath;
-		}
-		
-		LOGGER.info("Loading fallback cache data...");
-		
-		// Parse the fallback data into the fallback cache.
-		try {
+			// Parse the fallback data into the fallback cache.
+			LOGGER.info("Loading fallback cache data...");
 			
 			Gson gson = new Gson();
 			
-			String data = new String(Files.readAllBytes(cachePath));
+			String data = new String(Files.readAllBytes(cacheFile.toPath()));
 			
-			if (data.isEmpty() || data.isBlank()) {
+			if (data.isEmpty()) {
 				
-				LOGGER.warn("Fallback cache is empty, awaiting API response...");
+				LOGGER.warn("Cache data is empty, awaiting API response...");
 				
 				return;
 			}
 			
-			JsonObject object = gson.fromJson(data, JsonObject.class);
-			JsonPrimitive lastUpdated = object.getAsJsonPrimitive("lastUpdated");
-			JsonArray entries = object.getAsJsonArray("entries");
+			JsonObject wrapper = gson.fromJson(data, JsonObject.class);
+			
+			JsonPrimitive lastUpdated = wrapper.getAsJsonPrimitive("lastUpdated");
+			JsonArray entries = wrapper.getAsJsonArray("entries");
 			
 			for (int i = 0; i < entries.size(); i++) {
 				
 				JsonElement rawEntry = entries.get(i);
 				
-				if (rawEntry == null || rawEntry.isJsonNull())
-					continue;
+				if (rawEntry == null || rawEntry.isJsonNull()) continue;
 				
 				JsonObject entryObject = rawEntry.getAsJsonObject();
 				
 				Entry entry = defineCachedEntry(entryObject);
 				
-				if (entry == null)
-					continue;
+				if (entry == null) continue;
 				
 				fallbackCache.add(entry);
 			}
@@ -105,27 +88,30 @@ public class REST {
 			
 		} catch (Exception e) {
 			
-			LOGGER.error("Failed to parse cache data from disk!", e);
+			LOGGER.error("Failed to parse cache data from disk, exiting...", e);
 			
-			return;
+			System.exit(1);
 		}
 		
 		// Copy the fallback cache into the active cache.
 		activeCache.addAll(fallbackCache);
-		
-		LOGGER.info("Fallback cache data loaded!");
 	}
 	
 	public void fetch(int from, int to) {
 		
 		final String range = String.format("&range=%d-%d", from, to);
 		
-		OkHttpClient client = new OkHttpClient();
+		OkHttpClient client =
+				new OkHttpClient.Builder()
+						.connectTimeout(Duration.ofSeconds(10))
+						.readTimeout(Duration.ofMinutes(1))
+						.build();
 		
-		Request request = new Request.Builder()
-				.addHeader("Accept-Encoding", "gzip")
-				.url(BASE_URL + range)
-				.build();
+		Request request =
+				new Request.Builder()
+						.addHeader("Accept-Encoding", "gzip")
+						.url(BASE_URL + range)
+						.build();
 		
 		try (Response response = client.newCall(request).execute()) {
 			
@@ -165,7 +151,7 @@ public class REST {
 				
 				Entry entry = defineEntry(entryObject);
 				
-				if (entry == null)
+				if (entry == null || activeCache.contains(entry))
 					continue;
 				
 				activeCache.add(entry);
@@ -179,6 +165,9 @@ public class REST {
 	
 	public void write() {
 		
+		// If the active cache is empty, don't write anything.
+		if (activeCache.isEmpty()) return;
+		
 		// Write the active cache to disk.
 		Gson gson = new Gson();
 		
@@ -190,14 +179,23 @@ public class REST {
 		final long now = System.currentTimeMillis();
 		
 		JsonObject wrapper = new JsonObject();
+		
 		wrapper.add("lastUpdated", new JsonPrimitive(now));
 		wrapper.add("entries", tree);
 		
 		try {
 			
-			Files.write(cachePath, gson.toJson(wrapper).getBytes());
+			Files.write(cacheFile.toPath(), gson.toJson(wrapper).getBytes());
 			
 			lastUpdated = now;
+			
+			// Copy the active cache into the fallback cache.
+			for (Entry entry : activeCache) {
+				
+				if (fallbackCache.contains(entry)) continue;
+				
+				fallbackCache.add(entry);
+			}
 			
 		} catch (IOException e) {
 			
@@ -205,12 +203,22 @@ public class REST {
 		}
 	}
 	
+	public Entry getEntry(String id) {
+		
+		for (Entry entry : activeCache) {
+			
+			if (entry.getId().equals(id)) return entry;
+		}
+		
+		return null;
+	}
+	
 	public ArrayList<Entry> getActiveCache() {
 		
 		return activeCache;
 	}
 	
-	public ArrayList<Entry> getActiveCache(int from, int to) {
+	public ArrayList<Entry> getActiveCache(int from, int to, String genre) {
 		
 		// Make sure the range is valid.
 		if (from < 0 || to < 0 || from > to)
@@ -223,8 +231,12 @@ public class REST {
 		
 		for (int i = from; i < to; i++) {
 			
+			Entry entry = activeCache.get(i);
+			
+			if (!entry.getGenres().contains(genre) && !genre.equalsIgnoreCase("all"))
+				continue;
+			
 			cache.add(activeCache.get(i));
-
 		}
 		
 		return cache;
@@ -240,12 +252,14 @@ public class REST {
 		return lastUpdated;
 	}
 	
-	public Path getCachePath() {
+	public File getCacheFile() {
 		
-		return cachePath;
+		return cacheFile;
 	}
 	
 	private Entry defineEntry(JsonObject entry) {
+		
+		JsonElement rawId = entry.get("guid");
 		
 		JsonElement rawTitle = entry.get("title");
 		JsonElement rawDescription = entry.get("description");
@@ -253,26 +267,16 @@ public class REST {
 		
 		JsonElement rawReleaseYear = entry.get("plprogram$year");
 		
-		String title =
-				rawTitle == null || rawTitle.isJsonNull()
-						? "N/A"
-						: rawTitle.getAsString();
-		String description =
-				rawDescription == null || rawDescription.isJsonNull()
-						? "N/A"
-						: rawDescription.getAsString();
-		String programType =
-				rawProgramType == null || rawProgramType.isJsonNull()
-						? "N/A"
-						: rawProgramType.getAsString();
+		String id = rawId == null || rawId.isJsonNull() ? "N/A" : rawId.getAsString();
 		
-		int releaseYear =
-				rawReleaseYear == null || rawReleaseYear.isJsonNull()
-						? -1
-						: rawReleaseYear.getAsInt();
+		String title = rawTitle == null || rawTitle.isJsonNull() ? "N/A" : rawTitle.getAsString();
+		String description = rawDescription == null || rawDescription.isJsonNull() ? "N/A" : rawDescription.getAsString();
+		String programType = rawProgramType == null || rawProgramType.isJsonNull() ? "N/A" : rawProgramType.getAsString();
 		
-		ArrayList<String> covers = new ArrayList<>();
-		ArrayList<String> backdrops = new ArrayList<>();
+		int releaseYear = rawReleaseYear == null || rawReleaseYear.isJsonNull() ? -1 : rawReleaseYear.getAsInt();
+		
+		HashMap<String, List<Integer>> covers = new HashMap<>();
+		HashMap<String, List<Integer>> backdrops = new HashMap<>();
 		
 		ArrayList<String> genres = new ArrayList<>();
 		
@@ -295,15 +299,20 @@ public class REST {
 			
 			String url = thumbnail.get("plprogram$url").getAsString();
 			
-			if (url.contains("po") || url.contains("Poster")) covers.add(url);
-			else if (url.contains("bd")) backdrops.add(url);
+			int width = thumbnail.get("plprogram$width").getAsInt();
+			int height = thumbnail.get("plprogram$height").getAsInt();
+			
+			if (url.contains("po") || url.contains("Poster"))
+				covers.put(url, List.of(width, height));
+			
+			else if (url.contains("bd"))
+				backdrops.put(url, List.of(width, height));
 		}
 		
 		// Handle the genres.
 		JsonArray tags = entry.getAsJsonArray("plprogram$tags");
 		
-		if (tags == null || tags.isJsonNull())
-			return null;
+		if (tags == null || tags.isJsonNull()) return null;
 		
 		for (int i = 0; i < tags.size(); i++) {
 			
@@ -330,11 +339,8 @@ public class REST {
 			String type = credit.get("plprogram$creditType").getAsString();
 			String name = credit.get("plprogram$personName").getAsString();
 			
-			if (type.equalsIgnoreCase("actor"))
-				actors.add(name);
-			
-			else if (type.equalsIgnoreCase("director"))
-				directors.add(name);
+			if (type.equalsIgnoreCase("actor")) actors.add(name);
+			else if (type.equalsIgnoreCase("director")) directors.add(name);
 		}
 		
 		// Handle the trailers.
@@ -357,10 +363,12 @@ public class REST {
 			trailers.add(url);
 		}
 		
-		return new Entry(title, description, programType, releaseYear, covers, backdrops, genres, actors, directors, trailers);
+		return new Entry(id, title, description, programType, releaseYear, covers, backdrops, genres, actors, directors, trailers);
 	}
 	
 	private Entry defineCachedEntry(JsonObject entry) {
+		
+		JsonElement rawId = entry.get("id");
 		
 		JsonElement rawTitle = entry.get("title");
 		JsonElement rawDescription = entry.get("description");
@@ -368,26 +376,16 @@ public class REST {
 		
 		JsonElement rawReleaseYear = entry.get("releaseYear");
 		
-		String title =
-				rawTitle == null || rawTitle.isJsonNull()
-						? "N/A"
-						: rawTitle.getAsString();
-		String description =
-				rawDescription == null || rawDescription.isJsonNull()
-						? "N/A"
-						: rawDescription.getAsString();
-		String programType =
-				rawProgramType == null || rawProgramType.isJsonNull()
-						? "N/A"
-						: rawProgramType.getAsString();
+		String id = rawId == null || rawId.isJsonNull() ? "N/A" : rawId.getAsString();
 		
-		int releaseYear =
-				rawReleaseYear == null || rawReleaseYear.isJsonNull()
-						? -1
-						: rawReleaseYear.getAsInt();
+		String title = rawTitle == null || rawTitle.isJsonNull() ? "N/A" : rawTitle.getAsString();
+		String description = rawDescription == null || rawDescription.isJsonNull() ? "N/A" : rawDescription.getAsString();
+		String programType = rawProgramType == null || rawProgramType.isJsonNull() ? "N/A" : rawProgramType.getAsString();
 		
-		ArrayList<String> covers = new ArrayList<>();
-		ArrayList<String> backdrops = new ArrayList<>();
+		int releaseYear = rawReleaseYear == null || rawReleaseYear.isJsonNull() ? -1 : rawReleaseYear.getAsInt();
+		
+		HashMap<String, List<Integer>> covers = new HashMap<>();
+		HashMap<String, List<Integer>> backdrops = new HashMap<>();
 		
 		ArrayList<String> genres = new ArrayList<>();
 		
@@ -396,35 +394,42 @@ public class REST {
 		
 		ArrayList<String> trailers = new ArrayList<>();
 		
-		// Handle the covers and backdrops.
-		JsonArray coverArray = entry.getAsJsonArray("covers");
-		JsonArray backdropArray = entry.getAsJsonArray("backdrops");
+		// Handle the covers and backdrops (convert to HashMap).
+		JsonObject coversObject = entry.getAsJsonObject("covers");
+		JsonObject backdropsObject = entry.getAsJsonObject("backdrops");
 		
-		if (coverArray == null || coverArray.isJsonNull())
+		if (coversObject == null || coversObject.isJsonNull())
 			return null;
 		
-		if (backdropArray == null || backdropArray.isJsonNull())
+		if (backdropsObject == null || backdropsObject.isJsonNull())
 			return null;
 		
-		for (int i = 0; i < coverArray.size(); i++) {
+		// For each cover, add it to the covers map.
+		for (String key : coversObject.keySet()) {
 			
-			String cover = coverArray.get(i).getAsString();
+			JsonArray cover = coversObject.getAsJsonArray(key);
 			
-			covers.add(cover);
+			int width = cover.get(0).getAsInt();
+			int height = cover.get(1).getAsInt();
+			
+			covers.put(key, List.of(width, height));
 		}
 		
-		for (int i = 0; i < backdropArray.size(); i++) {
+		// For each backdrop, add it to the backdrops map.
+		for (String key : backdropsObject.keySet()) {
 			
-			String backdrop = backdropArray.get(i).getAsString();
+			JsonArray backdrop = backdropsObject.getAsJsonArray(key);
 			
-			backdrops.add(backdrop);
+			int width = backdrop.get(0).getAsInt();
+			int height = backdrop.get(1).getAsInt();
+			
+			backdrops.put(key, List.of(width, height));
 		}
 		
 		// Handle the genres.
 		JsonArray genresArray = entry.getAsJsonArray("genres");
 		
-		if (genresArray == null || genresArray.isJsonNull())
-			return null;
+		if (genresArray == null || genresArray.isJsonNull()) return null;
 		
 		for (int i = 0; i < genresArray.size(); i++) {
 			
@@ -460,8 +465,7 @@ public class REST {
 		// Handle the trailers.
 		JsonArray trailersArray = entry.getAsJsonArray("trailers");
 		
-		if (trailersArray == null || trailersArray.isJsonNull())
-			return null;
+		if (trailersArray == null || trailersArray.isJsonNull()) return null;
 		
 		for (int i = 0; i < trailersArray.size(); i++) {
 			
@@ -470,6 +474,6 @@ public class REST {
 			trailers.add(trailer);
 		}
 		
-		return new Entry(title, description, programType, releaseYear, covers, backdrops, genres, actors, directors, trailers);
+		return new Entry(id, title, description, programType, releaseYear, covers, backdrops, genres, actors, directors, trailers);
 	}
 }

@@ -1,13 +1,52 @@
 body {
+	
+	background-color: #F5F5F5;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 14px;
+	color: #333;
+	margin: 0;
+	padding: 0;
+	z-index: 0;
+}
 
-    background-color: #f5f5f5;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 14px;
-    line-height: 1.42857143;
-    color: #333;
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
+.genres {
+	
+	display: grid;
+	grid-template-columns: auto auto auto;
+	padding: 10px;
+}
+
+.genre {
+	
+	position: relative;
+	border: 1px;
+	padding: 20px;
+	font-size: 30px;
+	text-align: center;
+}
+
+.genre-art {
+	
+	width: 75%;
+	height: auto;
+	filter: brightness(50%);
+	transition: 0.5s;
+}
+
+.genre-art:hover {
+	
+	filter: brightness(100%);
+}
+
+.genre-text {
+	
+	font-size: 1.5em;
+	font-weight: bold;
+	color: #FFFFFF;
+	
+	z-index: 1;
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
 }

@@ -3,9 +3,13 @@ package me.casper.wexo.api;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 @Data
 public class Entry {
+	
+	private final String id;
 	
 	private final String title;
 	private final String description;
@@ -13,8 +17,8 @@ public class Entry {
 	
 	private final int releaseYear;
 	
-	private final ArrayList<String> covers;
-	private final ArrayList<String> backdrops;
+	private final HashMap<String, List<Integer>> covers;
+	private final HashMap<String, List<Integer>> backdrops;
 	
 	private final ArrayList<String> genres;
 	

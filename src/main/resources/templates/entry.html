@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta content="IE=edge" http-equiv="X-UA-Compatible">
+	<meta content="width=device-width, initial-scale=1.0" name="viewport">
+	<link rel="stylesheet" th:href="@{/css/index.css}"/>
+	<link rel="shortcut icon" th:href="@{/favicon.ico}" type="image/x-icon"/>
+	<title>Wexo</title>
+</head>
+<body>
+	<h2 th:text="${entry.title}"/>
+	
+	<h3>Description</h3>
+	<p th:text="${entry.description}"/>
+	
+	<h3>Release Year</h3>
+	<p th:text="${entry.releaseYear}"/>
+	
+	<h3>Actors</h3>
+	<div th:each="actor : ${entry.actors}">
+		<p th:text="${actor}"/>
+	</div>
+	
+	<h3>Directors</h3>
+	<div th:each="director : ${entry.directors}">
+		<p th:text="${director}"/>
+	</div>
+	
+	<h3>Genres</h3>
+	<div th:each="genre : ${entry.genres}">
+		<p th:text="${genre}"/>
+	</div>
+	
+	<h3>Covers</h3>
+	<div th:each="cover : ${entry.covers}">
+		<img th:src="${cover.getKey()}"/>
+	</div>
+	
+	<h3>Backdrops</h3>
+	<div th:each="backdrop : ${entry.backdrops}">
+		<img th:src="${backdrop.getKey()}"/>
+	</div>
+	
+	<h3>Trailers</h3>
+	<div th:each="trailer : ${entry.trailers}">
+		<a th:href="${trailer}"></a>
+	</div>
+</body>
+</html>
