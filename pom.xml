@@ -8,7 +8,7 @@
 		<version>2.7.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>me.casper</groupId>
+	<groupId>tech.asmussen</groupId>
 	<artifactId>Wexo</artifactId>
 	<version>1.0.0</version>
 	<packaging>war</packaging>

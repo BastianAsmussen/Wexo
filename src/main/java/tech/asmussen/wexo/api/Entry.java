@@ -1,4 +1,4 @@
-package me.casper.wexo.api;
+package tech.asmussen.wexo.api;
 
 import lombok.Data;
 
