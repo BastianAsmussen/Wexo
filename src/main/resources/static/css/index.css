@@ -1,52 +1,34 @@
 body {
-	
-	background-color: #F5F5F5;
-	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-	font-size: 14px;
-	color: #333;
 	margin: 0;
-	padding: 0;
-	overflow: scroll;
+	font-family: Arial, Helvetica, sans-serif;
 }
 
-.genres {
+.center {
 	
-	display: grid;
-	grid-template-columns: auto auto auto;
-	padding: 10px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
-.genre {
-	
-	position: relative;
-	border: 1px;
-	padding: 20px;
-	font-size: 30px;
+.nav {
+
+	overflow: hidden;
+	background-color: #333333;
+}
+
+.nav a {
+	float: left;
+	display: block;
+	color: #f2f2f2;
 	text-align: center;
+	padding: 14px 16px;
+	text-decoration: none;
+	font-size: 17px;
 }
 
-.genre-art {
+.nav a:hover {
 	
-	width: 75%;
-	height: auto;
-	filter: brightness(50%);
-	transition: 0.5s;
-}
-
-.genre-art:hover {
-	
-	filter: brightness(100%);
-}
-
-.genre-text {
-	
-	font-size: 1.5em;
-	font-weight: bold;
-	color: #FFFFFF;
-	
-	z-index: 1;
-	position: absolute;
-	left: 0;
-	right: 0;
-	bottom: 0;
+	background-color: #ddd;
+	color: black;
+	transition: all 0.5s;
 }

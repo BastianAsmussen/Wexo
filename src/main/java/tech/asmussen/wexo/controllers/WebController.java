@@ -1,12 +1,12 @@
 package tech.asmussen.wexo.controllers;
 
-import tech.asmussen.wexo.WEXOApplication;
-import tech.asmussen.wexo.api.Entry;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import tech.asmussen.wexo.WEXOApplication;
+import tech.asmussen.wexo.api.Entry;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,7 +15,12 @@ import java.util.HashMap;
 public class WebController {
 	
 	@GetMapping("/")
-	public String index(Model model, @RequestParam(value = "start", defaultValue = "1") int start, @RequestParam(value = "end", defaultValue = "100") int end, @RequestParam(value = "genre", defaultValue = "all") String genre, @RequestParam(value = "type", defaultValue = "all") String type) {
+	public String index(Model model,
+	                    @RequestParam(value = "start", defaultValue = "1") int start,
+	                    @RequestParam(value = "end", defaultValue = "100") int end,
+	                    @RequestParam(value = "genre", defaultValue = "all") String genre,
+	                    @RequestParam(value = "type", defaultValue = "all") String type,
+						@RequestParam(value = "search", defaultValue = "all") String search) {
 		
 		ArrayList<Entry> entries = WEXOApplication.getRestInstance().getActiveCache(start, end, genre, type);
 		
@@ -32,6 +37,15 @@ public class WebController {
 		// For each entry, add the genre to the list of genres if it isn't already there.
 		for (Entry entry : entries) {
 			
+			// If the search isn't "all", check if the title contains the search string.
+			if (!search.equalsIgnoreCase("all")) {
+				
+				if (!entry.getTitle().toLowerCase().contains(search.toLowerCase())) {
+					
+					continue;
+				}
+			}
+			
 			// For each genre in the entry (there can be multiple) add it to the HashMap.
 			for (String entryGenre : entry.getGenres()) {
 				
@@ -44,21 +58,12 @@ public class WebController {
 					
 					genres.put(entryGenre, 1);
 				}
+			}
+			
+			// If the genre doesn't have a cover art URL, add it.
+			if (!coverArt.containsKey(entry.getGenres().get(0))) {
 				
-				// Add a cover art URL to the map.
-				for (String url : entry.getBackdrops().keySet()) {
-					
-					int width = entry.getBackdrops().get(url).get(0);
-					int height = entry.getBackdrops().get(url).get(1);
-					
-					// If the aspect ratio is 16:9, use it as cover art.
-					if (width / height == 16 / 9) {
-						
-						coverArt.put(entryGenre, url);
-						
-						break;
-					}
-				}
+				coverArt.put(entry.getGenres().get(0), entry.getBestCover(720,  640));
 			}
 		}
 		

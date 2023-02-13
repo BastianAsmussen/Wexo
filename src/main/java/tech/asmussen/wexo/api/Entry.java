@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static tech.asmussen.wexo.WEXOApplication.LOGGER;
+
 @Data
 public class Entry {
 	
@@ -26,4 +28,51 @@ public class Entry {
 	private final ArrayList<String> directors;
 	
 	private final ArrayList<String> trailers;
+	
+	public String getBestCover(int width, int height) {
+		
+		// Get the cover closest to the requested dimensions.
+		String bestCover = null;
+		
+		for (String url : covers.keySet()) {
+			
+			int coverWidth = covers.get(url).get(0);
+			int coverHeight = covers.get(url).get(1);
+			
+			if (coverWidth >= width && coverHeight >= height) {
+				
+				if (bestCover == null) {
+					
+					bestCover = url;
+					
+				} else {
+					
+					int bestWidth = covers.get(bestCover).get(0);
+					int bestHeight = covers.get(bestCover).get(1);
+					
+					if (coverWidth < bestWidth && coverHeight < bestHeight) {
+						
+						bestCover = url;
+					}
+				}
+			}
+		}
+		
+		// If no cover was found, return the first one.
+		if (bestCover == null) {
+			
+			LOGGER.warn("No cover found for entry {} with dimensions {}x{}!", id, width, height);
+			
+			if (!covers.isEmpty()) {
+				
+				bestCover = covers.keySet().iterator().next();
+				
+			} else {
+				
+				LOGGER.warn("No covers found for entry {}!", id);
+			}
+		}
+		
+		return bestCover;
+	}
 }

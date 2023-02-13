@@ -1,31 +1,20 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!doctype html>
+<html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<meta content="IE=edge" http-equiv="X-UA-Compatible">
-	<meta content="width=device-width, initial-scale=1.0" name="viewport">
-	<link rel="stylesheet" th:href="@{/css/index.css}"/>
+	<meta name="viewport"
+		  content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<link rel="stylesheet" th:href="@{/css/index.css}">
 	<link rel="shortcut icon" th:href="@{/favicon.ico}" type="image/x-icon"/>
-	<script th:src="@{/js/index.js}"></script>
-	<title>WEXO Biografen</title>
+	<title>WEXO</title>
 </head>
 <body>
-<div class="genres" th:if="${genre.equalsIgnoreCase('all')}">
-	<div class="genre" th:each="genre : ${genres}">
-		<a th:href="'/?start=' + ${start} + '&end=' + ${end} + '&genre=' + ${genre.getKey()}">
-			<img class="genre-art" th:alt="${genre.getKey()}" th:attr="src=${coverArt.get(genre.getKey())}"/>
-			<p class="genre-text" th:text="${genre.getKey()} + ' (' + ${genre.getValue()} + ')'"/>
-		</a>
+	<div class="nav">
+		<div class="search-container">
+			<input type="text" name="search" placeholder="Avengers Endgame">
+			<input class="search-button" type="submit" value="Search">
+		</div>
 	</div>
-</div>
-
-<div class="entries" th:if="${!genre.equalsIgnoreCase('all')}">
-	<div class="entry" th:each="entry : ${entries}">
-		<a th:href="'/entry/' + ${entry.id}">
-			<img class="entry-art" th:alt="${entry.getTitle()}" th:src="${entry.getCovers().keySet().toArray()[0]}"/>
-			<p class="entry-text" th:text="${entry.getTitle()}"/>
-		</a>
-	</div>
-</div>
 </body>
 </html>

@@ -47,6 +47,6 @@ public final class Time {
 	 */
 	public static double getPercentage(int loaded, int total) {
 		
-		return (loaded / (double) total) * 100;
+		return (double) (loaded / total) * 100;
 	}
 }
