@@ -10,17 +10,11 @@ body {
 	font-family: Arial, Helvetica, sans-serif;
 }
 
-.center {
-	
-	display: flex;
-	justify-content: center;
-	align-items: center;
-}
-
 .nav {
 	
 	display: flex;
 	padding: 0 1rem;
+	align-items: center;
 	position: -webkit-sticky; /* Safari */
 	position: sticky;
 	top: 0;
@@ -31,7 +25,7 @@ body {
 	
 	color: white;
 	text-decoration: none;
-	padding: 1rem 1rem;
+	padding: 0 1rem;
 	font-size: 1rem;
 	transition: all 0.5s ease;
 }
@@ -42,10 +36,11 @@ body {
 	color: var(--main-color);
 }
 
-.active:hover {
+/* Icons in navbar. */
+.nav i {
 	
-	background-color: var(--main-color);
-	color: white;
+	font-size: 2rem;
+	margin-right: 0.5rem;
 }
 
 .dropbtn {
@@ -93,6 +88,7 @@ body {
 .dropdown-content a:hover {
 	
 	background-color: gray;
+	color: white;
 }
 
 .dropdown:hover .dropdown-content {
