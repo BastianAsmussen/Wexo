@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import tech.asmussen.wexo.WEXOApplication;
 import tech.asmussen.wexo.api.Entry;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 @Controller
 public class WebController {
@@ -22,7 +22,7 @@ public class WebController {
 	                    @RequestParam(value = "type", defaultValue = "all") String type,
 						@RequestParam(value = "search", defaultValue = "all") String search) {
 		
-		ArrayList<Entry> entries = WEXOApplication.getRestInstance().getActiveCache(start, end, genre, type);
+		List<Entry> entries = WEXOApplication.getRestInstance().getActiveCache(start, end, genre, type, search);
 		
 		HashMap<String, Integer> genres = new HashMap<>();
 		HashMap<String, String> coverArt = new HashMap<>(); // A list of URLs to use as cover art for each genre. (Genre -> URL)
@@ -36,15 +36,6 @@ public class WebController {
 		
 		// For each entry, add the genre to the list of genres if it isn't already there.
 		for (Entry entry : entries) {
-			
-			// If the search isn't "all", check if the title contains the search string.
-			if (!search.equalsIgnoreCase("all")) {
-				
-				if (!entry.getTitle().toLowerCase().contains(search.toLowerCase())) {
-					
-					continue;
-				}
-			}
 			
 			// For each genre in the entry (there can be multiple) add it to the HashMap.
 			for (String entryGenre : entry.getGenres()) {

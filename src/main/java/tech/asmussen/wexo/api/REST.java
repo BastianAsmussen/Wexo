@@ -208,7 +208,7 @@ public class REST {
 		return activeCache;
 	}
 	
-	public ArrayList<Entry> getActiveCache(int from, int to, String genre, String type) {
+	public ArrayList<Entry> getActiveCache(int from, int to, String genre, String type, String search) {
 		
 		// Make sure the range is valid.
 		if (from < 0 || to < 0 || from > to) return null;
@@ -217,6 +217,22 @@ public class REST {
 		to = Math.min(to, activeCache.size());
 		
 		ArrayList<Entry> filteredCache = new ArrayList<>();
+		
+		// If the search is not "all" or empty, filter by the search.
+		if (!search.equalsIgnoreCase("all") && !search.isEmpty()) {
+			
+			for (int i = from; i < to; i++) {
+				
+				Entry entry = activeCache.get(i);
+				
+				if (filteredCache.contains(entry)) continue;
+				
+				if (entry.getTitle().toLowerCase().contains(search.toLowerCase()))
+					filteredCache.add(entry);
+			}
+			
+			return filteredCache;
+		}
 		
 		// If the genre and the type are both "all", just return the range.
 		if (genre.equalsIgnoreCase("all") && type.equalsIgnoreCase("all")) {
