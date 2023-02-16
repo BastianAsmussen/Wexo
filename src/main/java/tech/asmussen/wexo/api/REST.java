@@ -211,82 +211,44 @@ public class REST {
 	public ArrayList<Entry> getActiveCache(int from, int to, String genre, String type, String search) {
 		
 		// Make sure the range is valid.
-		if (from < 0 || to < 0 || from > to) return null;
+		if (from < 0 || to < 0 || from > to)
+			return null;
 		
 		// Make sure the range is within the cache.
 		to = Math.min(to, activeCache.size());
 		
-		ArrayList<Entry> filteredCache = new ArrayList<>();
+		List<Entry> filteredCache = new ArrayList<>();
 		
-		// If the search is not "all" or empty, filter by the search.
-		if (!search.equalsIgnoreCase("all") && !search.isEmpty()) {
+		// If the search query is "all" or empty, add all entries to the filtered cache.
+		if (search.equalsIgnoreCase("all") || search.isEmpty()) {
 			
-			for (int i = from; i < to; i++) {
-				
-				Entry entry = activeCache.get(i);
-				
-				if (filteredCache.contains(entry)) continue;
+			filteredCache.addAll(activeCache.subList(from, to));
+			
+		} else {
+			
+			// Else, filter by the search.
+			for (Entry entry : activeCache.subList(from, to)) {
 				
 				if (entry.getTitle().toLowerCase().contains(search.toLowerCase()))
 					filteredCache.add(entry);
 			}
-			
-			return filteredCache;
 		}
 		
-		// If the genre and the type are both "all", just return the range.
-		if (genre.equalsIgnoreCase("all") && type.equalsIgnoreCase("all")) {
+		// If the genre is not "all" or empty, filter by the genre.
+		if (!genre.equalsIgnoreCase("all") && !genre.isEmpty()) {
 			
-			for (int i = from; i < to; i++) {
-				
-				filteredCache.add(activeCache.get(i));
-			}
-			
-			return filteredCache;
+			// If the genre is not "all" or empty, filter by the genre.
+			filteredCache.removeIf(entry -> !entry.getGenres().contains(genre));
 		}
 		
-		// If the genre is "all", filter by the type.
-		if (genre.equalsIgnoreCase("all")) {
+		// If the program type isn't "all" or empty, filter by the program type.
+		if (!type.equalsIgnoreCase("all") && !type.isEmpty()) {
 			
-			for (int i = from; i < to; i++) {
-				
-				Entry entry = activeCache.get(i);
-				
-				if (filteredCache.contains(entry)) continue;
-				
-				if (entry.getProgramType().equalsIgnoreCase(type)) filteredCache.add(entry);
-			}
-			
-			return filteredCache;
+			// If the type is not "all" or empty, filter by the type.
+			filteredCache.removeIf(entry -> !entry.getProgramType().equalsIgnoreCase(type));
 		}
 		
-		// If the type is "all", filter by the genre.
-		if (type.equalsIgnoreCase("all")) {
-			
-			for (int i = from; i < to; i++) {
-				
-				Entry entry = activeCache.get(i);
-				
-				if (filteredCache.contains(entry)) continue;
-				
-				if (entry.getGenres().contains(genre)) filteredCache.add(entry);
-			}
-			
-			return filteredCache;
-		}
-		
-		// Filter by both the genre and the type.
-		for (int i = from; i < to; i++) {
-			
-			Entry entry = activeCache.get(i);
-			
-			if (filteredCache.contains(entry)) continue;
-			
-			if (entry.getGenres().contains(genre) && entry.getProgramType().equalsIgnoreCase(type))
-				filteredCache.add(entry);
-		}
-		
-		return filteredCache;
+		return new ArrayList<>(filteredCache);
 	}
 	
 	public ArrayList<Entry> getFallbackCache() {

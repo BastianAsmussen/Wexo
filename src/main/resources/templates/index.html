@@ -1,33 +1,32 @@
-<!doctype html>
-<html lang="da" xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
 	<meta charset="UTF-8">
-	<meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
-		  name="viewport">
-	<meta content="ie=edge" http-equiv="X-UA-Compatible">
-	<link rel="stylesheet" th:href="@{/css/index.css}">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" th:href="@{/css/styles.css}">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 	<link rel="shortcut icon" th:href="@{/img/favicon.ico}" type="image/x-icon"/>
 	<title>WEXO</title>
 </head>
 <body>
-<div class="nav">
-	<a th:href="@{/}">
-		<i class="fa fa-home" aria-hidden="true"></i>
-	</a>
-	<div class="dropdown">
-		<button class="dropbtn">Genre</button>
-		<div class="dropdown-content">
-			<div th:each="genre : ${genres}">
-				<a th:href="@{/genre/{id}(id=${genre.getValue()})}" th:text="${genre.getKey()}"></a>
+<ul>
+	<li><a th:href="@{/}">Hjem</a></li>
+	<li>
+		<div class="genre-dropdown">
+			<button class="genre-dropbtn">Genre</button>
+			<div class="genre-dropdown-content">
+				<a th:each="genre : ${genres.keySet()}" th:href="@{/genre/{id}(id=${genre})}" th:text="${genre}"/>
 			</div>
 		</div>
-	</div>
-	<form class="search">
-		<input name="search" placeholder="Avengers Endgame..." type="text">
-		<button type="submit">Søg</button>
-	</form>
-</div>
+	</li>
+	<li>
+		<form>
+			<label>
+				<input name="search" placeholder="Søg..." type="text">
+				<button type="submit"><i class="fa fa-search"></i></button>
+			</label>
+		</form>
+	</li>
+</ul>
 <div class="container">
 	<div class="content">
 		<div th:each="entry : ${entries}">

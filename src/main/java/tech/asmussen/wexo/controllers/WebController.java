@@ -11,6 +11,8 @@ import tech.asmussen.wexo.api.Entry;
 import java.util.HashMap;
 import java.util.List;
 
+import static tech.asmussen.wexo.WEXOApplication.LOGGER;
+
 @Controller
 public class WebController {
 	
@@ -24,10 +26,12 @@ public class WebController {
 		
 		List<Entry> entries = WEXOApplication.getRestInstance().getActiveCache(start, end, genre, type, search);
 		
-		HashMap<String, Integer> genres = new HashMap<>();
+		HashMap<String, Integer> genres = new HashMap<>(); // A list of genres and the number of entries in each. (Genre -> Count)
 		HashMap<String, String> coverArt = new HashMap<>(); // A list of URLs to use as cover art for each genre. (Genre -> URL)
 		
 		if (entries == null || entries.isEmpty()) {
+			
+			LOGGER.error("No entries found for the given parameters!");
 			
 			model.addAttribute("cause", "Der blev ikke fundet noget data i vores system!");
 			
