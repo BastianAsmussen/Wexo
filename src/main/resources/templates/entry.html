@@ -1,14 +1,33 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html lang="da"
+	  xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:th="http://www.thymeleaf.org">
+
 <head>
 	<meta charset="UTF-8">
-	<meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
-		  name="viewport">
-	<meta content="ie=edge" http-equiv="X-UA-Compatible">
-	<link rel="stylesheet" th:href="@{/css/styles.css}">
+	<link rel="stylesheet" th:href="@{/css/main.css}">
+	<link rel="stylesheet" th:href="@{/css/entry.css}">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 	<link rel="shortcut icon" th:href="@{/img/favicon.ico}" type="image/x-icon"/>
 	<title>WEXO</title>
 </head>
 <body>
+<nav>
+	<div class="navbar">
+		<a class="primary" th:href="@{/}">Hjem</a>
+		<div class="search">
+			<form action="/" method="get">
+				<label>
+					<input name="search" placeholder="Søg..." type="text">
+					<button type="submit"><i class="fa fa-search"></i></button>
+				</label>
+			</form>
+		</div>
+	</div>
+</nav>
+
+<div class="image-container">
+	<img alt="Cover Image" th:src="@{${entry.getBestCover(1400, 2100)}}">
+</div>
 </body>
 </html>

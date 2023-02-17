@@ -10,10 +10,32 @@ body {
 	font-family: Arial, sans-serif;
 }
 
+.primary {
+	
+	background-color: var(--main-color) !important;
+	color: white !important;
+}
+
+.primary:hover {
+	
+	background-color: white !important;
+	color: var(--main-color) !important;
+}
+
+nav {
+	
+	position: sticky;
+	position: -webkit-sticky; /* Safari */
+	top: 0;
+}
+
 .navbar {
 	
 	overflow: hidden;
+	padding: 0 1rem;
+	
 	background-color: var(--nav-color);
+	color: white;
 }
 
 .navbar a {
@@ -24,8 +46,8 @@ body {
 	padding: .875rem 1rem;
 	text-decoration: none;
 	
-	color: white;
-	background-color: var(--main-color);
+	background-color: inherit;
+	color: inherit;
 	transition: all .5s ease;
 }
 
@@ -43,17 +65,17 @@ body {
 	padding: .875rem 1rem;
 	font-family: inherit;
 	margin: 0;
-	
 	cursor: pointer;
-	background-color: var(--main-color);
-	color: white;
+	
+	background-color: inherit;
+	color: inherit;
 	transition: all .5s ease;
 }
 
 .navbar a:hover, .dropdown:hover .dropdown-button {
 	
 	background-color: white;
-	color: var(--main-color);
+	color: black;
 }
 
 .dropdown-content {
@@ -63,8 +85,6 @@ body {
 	min-width: 10rem;
 	box-shadow: 0 .5rem 1rem 0 rgba(0, 0, 0, .2);
 	z-index: 1;
-	
-	background-color: var(--main-color);
 }
 
 .dropdown-content a {
@@ -89,5 +109,12 @@ body {
 .dropdown:hover .dropdown-content {
 	
 	display: block;
-	background-color: white;
+}
+
+.search {
+	
+	float: right;
+	
+	position: relative;
+	margin: .75rem 0;
 }

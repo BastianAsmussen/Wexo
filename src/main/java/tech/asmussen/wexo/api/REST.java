@@ -5,7 +5,9 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.Duration;
@@ -13,7 +15,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 import static tech.asmussen.wexo.WEXOApplication.LOGGER;
@@ -130,6 +131,10 @@ public class REST {
 			
 			inputStream.close();
 			
+			BufferedWriter writer = new BufferedWriter(new FileWriter("C:/Users/Bastian/OneDrive - TECHCOLLEGE/Desktop/Test.json"));
+			writer.write(data.toString());
+			writer.close();
+			
 			JsonArray entries = new Gson().fromJson(data.toString(), JsonObject.class).getAsJsonArray("entries");
 			
 			if (entries == null || entries.isEmpty()) {
@@ -199,7 +204,8 @@ public class REST {
 		
 		for (Entry entry : activeCache) {
 			
-			if (entry.getId().equals(id)) return entry;
+			if (entry.getId().equalsIgnoreCase(id))
+				return entry;
 		}
 		
 		return null;

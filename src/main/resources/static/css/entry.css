@@ -1,0 +1,8 @@
+.image-container img {
+	
+	width: 25rem;
+	height: auto;
+	
+	display: flex;
+	align-items: center;
+}

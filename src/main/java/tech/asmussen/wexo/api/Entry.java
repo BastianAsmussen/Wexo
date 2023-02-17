@@ -2,7 +2,6 @@ package tech.asmussen.wexo.api;
 
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -22,12 +21,12 @@ public class Entry {
 	private final HashMap<String, List<Integer>> covers;
 	private final HashMap<String, List<Integer>> backdrops;
 	
-	private final ArrayList<String> genres;
+	private final List<String> genres;
 	
-	private final ArrayList<String> actors;
-	private final ArrayList<String> directors;
+	private final List<String> actors;
+	private final List<String> directors;
 	
-	private final ArrayList<String> trailers;
+	private final List<String> trailers;
 	
 	public String getBestCover(int width, int height) {
 		
