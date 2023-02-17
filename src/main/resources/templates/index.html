@@ -11,26 +11,16 @@
 	<title>WEXO</title>
 </head>
 <body>
-<div th:class="nav">
-	<ul>
-		<li><a th:href="@{/}">Hjem</a></li>
-		<li>
-			<div th:class="dropdown">
-				<button th:class="dropdown-button">Genre</button>
-				<div th:class="dropdown-content">
-					<a th:each="genre : ${genres.keySet()}" th:href="@{/genre/{id}(id=${genre})}" th:text="${genre}"/>
-				</div>
-			</div>
-		</li>
-		<li>
-			<form>
-				<label>
-					<input name="search" placeholder="Søg..." type="text">
-					<button type="submit"><i class="fa fa-search"></i></button>
-				</label>
-			</form>
-		</li>
-	</ul>
+<div class="navbar">
+	<a th:href="@{/}">Hjem</a>
+	<div class="dropdown">
+		<button class="dropdown-button">Genre
+			<i class="fa fa-caret-down"></i>
+		</button>
+		<div class="dropdown-content">
+			<a th:each="genre : ${genres.keySet()}" th:href="@{/genre/{genre}(genre=${genre})}" th:text="${genre}"></a>
+		</div>
+	</div>
 </div>
 <div class="container">
 	<div class="content">

@@ -12,6 +12,8 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 import static tech.asmussen.wexo.WEXOApplication.LOGGER;
@@ -211,8 +213,7 @@ public class REST {
 	public ArrayList<Entry> getActiveCache(int from, int to, String genre, String type, String search) {
 		
 		// Make sure the range is valid.
-		if (from < 0 || to < 0 || from > to)
-			return null;
+		if (from < 0 || to < 0 || from > to) return null;
 		
 		// Make sure the range is within the cache.
 		to = Math.min(to, activeCache.size());
@@ -229,8 +230,7 @@ public class REST {
 			// Else, filter by the search.
 			for (Entry entry : activeCache.subList(from, to)) {
 				
-				if (entry.getTitle().toLowerCase().contains(search.toLowerCase()))
-					filteredCache.add(entry);
+				if (entry.getTitle().toLowerCase().contains(search.toLowerCase())) filteredCache.add(entry);
 			}
 		}
 		
@@ -238,7 +238,9 @@ public class REST {
 		if (!genre.equalsIgnoreCase("all") && !genre.isEmpty()) {
 			
 			// If the genre is not "all" or empty, filter by the genre.
-			filteredCache.removeIf(entry -> !entry.getGenres().contains(genre));
+			Pattern pattern = Pattern.compile(Pattern.quote(genre), Pattern.CASE_INSENSITIVE);
+			
+			filteredCache.removeIf(entry -> !pattern.matcher(String.join(",", entry.getGenres())).find());
 		}
 		
 		// If the program type isn't "all" or empty, filter by the program type.

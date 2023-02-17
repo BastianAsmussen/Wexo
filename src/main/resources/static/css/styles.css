@@ -10,105 +10,84 @@ body {
 	font-family: Arial, sans-serif;
 }
 
-/* Navigation bar: */
-.nav ul {
+.navbar {
 	
-	display: flex;
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
 	overflow: hidden;
-	position: sticky;
-	position: -webkit-sticky; /* Safari */
-	top: 0;
-	
 	background-color: var(--nav-color);
-	color: white;
 }
 
-.nav li {
+.navbar a {
 	
 	float: left;
+	font-size: 1rem;
+	text-align: center;
+	padding: .875rem 1rem;
+	text-decoration: none;
+	
+	color: white;
+	background-color: var(--main-color);
+	transition: all .5s ease;
 }
 
-.nav li a {
+.dropdown {
 	
-	display: block;
-	padding: .5rem;
+	float: left;
+	overflow: hidden;
+}
+
+.dropdown .dropdown-button {
 	
-	text-decoration: none;
+	font-size: 1rem;
+	border: none;
+	outline: none;
+	padding: .875rem 1rem;
+	font-family: inherit;
+	margin: 0;
+	
+	cursor: pointer;
 	background-color: var(--main-color);
 	color: white;
 	transition: all .5s ease;
 }
 
-.nav li a:hover {
+.navbar a:hover, .dropdown:hover .dropdown-button {
 	
 	background-color: white;
 	color: var(--main-color);
 }
 
-.nav li:last-of-type {
-	
-	margin-left: auto;
-	
-	display: flex;
-	justify-content: center;
-	align-items: center;
-}
-
-/* Genre dropdown menu: */
-.nav .dropdown  .dropdown-button {
-	
-	padding: 1rem;
-	font-size: 1rem;
-	border: none;
-	
-	background-color: var(--main-color);
-	color: white;
-	transition: all .5s ease;
-}
-
-.nav .dropdown {
-	
-	position: relative;
-	display: inline-block;
-}
-
-.nav .dropdown .dropdown-content {
+.dropdown-content {
 	
 	display: none;
 	position: absolute;
-	background-color: white;
 	min-width: 10rem;
 	box-shadow: 0 .5rem 1rem 0 rgba(0, 0, 0, .2);
 	z-index: 1;
+	
+	background-color: var(--main-color);
 }
 
-.nav .dropdown .dropdown-content a {
+.dropdown-content a {
 	
-	display: block;
+	float: none;
+	padding: .875rem 1rem;
 	text-decoration: none;
-	padding: .75rem 1rem;
+	display: block;
+	text-align: left;
 	
+	background-color: white;
 	color: black;
 	transition: all .5s ease;
 }
 
-.nav .dropdown .dropdown-content a:hover {
+.dropdown-content a:hover {
 	
 	background-color: gray;
-	color: white;
+	color: black;
 }
 
-.nav .dropdown:hover .dropdown-content {
+.dropdown:hover .dropdown-content {
 	
 	display: block;
-}
-
-.nav .dropdown:hover .dropdown-button {
-	
 	background-color: white;
-	color: var(--main-color);
-	cursor: pointer;
 }

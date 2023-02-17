@@ -65,7 +65,6 @@ public class WebController {
 		model.addAttribute("start", start);
 		model.addAttribute("end", end);
 		model.addAttribute("genre", genre);
-		
 		model.addAttribute("entries", entries);
 		model.addAttribute("genres", genres);
 		model.addAttribute("coverArt", coverArt);

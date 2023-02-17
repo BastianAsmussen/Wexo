@@ -10,31 +10,5 @@
 	<title>WEXO</title>
 </head>
 <body>
-<div class="nav">
-	<a class="active" th:href="@{/}">Hjem</a>
-	<div class="dropdown">
-		<button class="dropbtn">Genre</button>
-		<div class="dropdown-content">
-			<div th:each="genre : ${genres}">
-				<a th:href="@{/genre/{id}(id=${genre.getValue()})}" th:text="${genre.getKey()}"></a>
-			</div>
-		</div>
-	</div>
-	<form class="search">
-		<input name="search" placeholder="Avengers Endgame..." type="text">
-		<button type="submit">Søg</button>
-	</form>
-</div>
-<div class="container">
-	<div class="content">
-		<div th:each="entry : ${entries}">
-			<div class="entry">
-				<div class="entry-title">
-					<a th:href="@{/entry/{id}(id=${entry.getId()})}" th:text="${entry.getTitle()}"></a>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
 </body>
 </html>
