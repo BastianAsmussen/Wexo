@@ -5,9 +5,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.Duration;
@@ -105,7 +103,6 @@ public class REST {
 		final String range = String.format("&range=%d-%d", from, to);
 		
 		OkHttpClient client = new OkHttpClient.Builder().connectTimeout(Duration.ofSeconds(10)).readTimeout(Duration.ofMinutes(1)).build();
-		
 		Request request = new Request.Builder().addHeader("Accept-Encoding", "gzip").url(BASE_URL + range).build();
 		
 		try (Response response = client.newCall(request).execute()) {
@@ -130,10 +127,6 @@ public class REST {
 			}
 			
 			inputStream.close();
-			
-			BufferedWriter writer = new BufferedWriter(new FileWriter("C:/Users/Bastian/OneDrive - TECHCOLLEGE/Desktop/Test.json"));
-			writer.write(data.toString());
-			writer.close();
 			
 			JsonArray entries = new Gson().fromJson(data.toString(), JsonObject.class).getAsJsonArray("entries");
 			
@@ -204,8 +197,7 @@ public class REST {
 		
 		for (Entry entry : activeCache) {
 			
-			if (entry.getId().equalsIgnoreCase(id))
-				return entry;
+			if (entry.getId().equalsIgnoreCase(id)) return entry;
 		}
 		
 		return null;

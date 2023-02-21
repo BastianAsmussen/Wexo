@@ -1,8 +1,118 @@
-.image-container img {
+:root {
+	
+	--background: #36393E;
+}
+
+body {
+	
+	font-family: 'Roboto', sans-serif;
+	font-size: 1.5rem;
+	background: var(--background);
+	color: white;
+}
+
+.container {
+	
+	display: grid;
+	grid-template-areas:
+		"title title title title"
+		"cover description description description "
+		"cover genres genres release-year"
+		"cover actors actors directors";
+	column-gap: 1rem;
+	width: 75%;
+	
+	/* Center the wrapper div. */
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	align-items: center;
+}
+
+.cover {
+	
+	grid-area: cover;
+}
+
+.cover img {
 	
 	width: 25rem;
 	height: auto;
+	border: .0625rem solid white;
+	border-radius: 2.5%;
+	transition: all .5s ease;
+}
+
+.cover img:hover {
+	
+	transform: scale(1.1) translate(-10%, 5%);
+	box-shadow: 0 0 1rem 1rem rgba(0, 0, 0, .5);
+}
+
+.title {
+	
+	grid-area: title;
+	font-size: 2.5rem;
+	font-weight: 700;
+}
+
+.release-year {
+	
+	grid-area: release-year;
+	font-size: 1rem;
+	font-weight: 700;
+}
+
+.release-year p {
+	
+	font-size: 1.25rem;
+	font-weight: 400;
+	margin-left: 1rem;
+}
+
+.description {
+	
+	grid-area: description;
+	font-size: 1.25rem;
+	font-weight: 400;
+}
+
+.genres {
+	
+	grid-area: genres;
+	font-size: 1rem;
+	font-weight: 400;
+}
+
+.actors {
+	
+	grid-area: actors;
+	font-size: 1rem;
+	font-weight: 400;
+}
+
+.directors {
+	
+	grid-area: directors;
+	font-size: 1rem;
+	font-weight: 400;
+}
+
+.empty {
+	
+	grid-area: empty;
+}
+
+ul {
 	
 	display: flex;
-	align-items: center;
+	flex-wrap: wrap;
+	list-style-type: none;
+}
+
+ul li {
+	
+	margin-right: 1rem;
+	flex-basis: 25%;
 }
