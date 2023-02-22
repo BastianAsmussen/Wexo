@@ -2,11 +2,10 @@ package tech.asmussen.wexo.api;
 
 import lombok.Data;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import static tech.asmussen.wexo.WEXOApplication.LOGGER;
+import java.util.Objects;
 
 @Data
 public class Entry {
@@ -31,57 +30,40 @@ public class Entry {
 	
 	public String getBestCover(int width, int height) {
 		
-		Map<String, List<Integer>> bestCovers = new HashMap<>(); // URL -> [width, height]
+		// The covers are not sorted, we need to fetch the one with the highest resolution that is closest to the aspect ratio.
+		// Covers are order like so: URL -> [Width, Height]
 		
-		final double aspectRatio = getAspectRatio(width, height);
-		
-		// Get the cover with the closest aspect ratio.
+		// The best cover is the one with the highest resolution that is closest to the aspect ratio.
 		String bestCover = null;
-		double bestDifference = Double.MAX_VALUE;
 		
+		int bestCoverWidth = 0;
+		int bestCoverHeight = 0;
+		
+		// The aspect ratio of the requested image.
+		double requestedAspectRatio = getAspectRatio(width, height);
+		
+		// For each cover in the entry, check if it is the best cover.
 		for (String cover : covers.keySet()) {
 			
-			List<Integer> dimensions = covers.get(cover);
+			// Get the width and height of the cover.
+			int coverWidth = covers.get(cover).get(0);
+			int coverHeight = covers.get(cover).get(1);
 			
-			if (dimensions.size() != 2) {
-				
-				LOGGER.warn("Cover dimensions for {} are not 2!", cover);
-				
-				continue;
-			}
-			
-			int coverWidth = dimensions.get(0);
-			int coverHeight = dimensions.get(1);
-			
+			// Get the aspect ratio of the cover.
 			double coverAspectRatio = getAspectRatio(coverWidth, coverHeight);
-			double difference = Math.abs(aspectRatio - coverAspectRatio);
 			
-			if (difference < bestDifference) {
-				
-				bestDifference = difference;
+			// If the cover is larger than the best cover, and the aspect ratio is in the correct range, set it as the best cover.
+			final double aspectRatioRange = 0.25;
+			
+			if (coverWidth > bestCoverWidth
+					&& coverHeight > bestCoverHeight
+					&& coverAspectRatio > (requestedAspectRatio - aspectRatioRange)
+					&& coverAspectRatio < (requestedAspectRatio + aspectRatioRange))
+			{
 				bestCover = cover;
 				
-				bestCovers.put(cover, List.of(coverWidth, coverHeight));
-			}
-		}
-		
-		// Get the cover with the highest resolution.
-		int bestWidth = 0;
-		int bestHeight = 0;
-		
-		for (String cover : bestCovers.keySet()) {
-			
-			List<Integer> dimensions = bestCovers.get(cover);
-			
-			int coverWidth = dimensions.get(0);
-			int coverHeight = dimensions.get(1);
-			
-			if (coverWidth > bestWidth && coverHeight > bestHeight) {
-				
-				bestWidth = coverWidth;
-				bestHeight = coverHeight;
-				
-				bestCover = cover;
+				bestCoverWidth = coverWidth;
+				bestCoverHeight = coverHeight;
 			}
 		}
 		

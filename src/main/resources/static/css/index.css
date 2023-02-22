@@ -29,10 +29,6 @@ body {
 	
 	width: 75%;
 	margin-top: 5rem;
-	
-	/* Center the grid items. */
-	align-items: center;
-	justify-content: center;
 }
 
 /* Extra small devices (phones, 600px and down) */
@@ -103,12 +99,18 @@ body {
 
 ::-webkit-scrollbar-track {
 	
-	background: #797979;
+	/* Hide the scrollbar track. */
+	background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
 	
-	background: #525252;
-	border: .5rem solid #525252;
+	background: gray;
+	border: .5rem solid gray;
 	border-radius: 1rem;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	
+	background: #555;
 }

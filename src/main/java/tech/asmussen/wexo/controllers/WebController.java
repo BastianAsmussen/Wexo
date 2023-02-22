@@ -61,7 +61,7 @@ public class WebController {
 			// If the genre doesn't have a cover art URL, add it.
 			if (!coverArt.containsKey(entry.getGenres().get(0))) {
 				
-				coverArt.put(entry.getGenres().get(0), entry.getBestCover(720, 640));
+				coverArt.put(entry.getGenres().get(0), entry.getBestCover(2160, 3840));
 			}
 		}
 		

@@ -283,6 +283,9 @@ public class REST {
 			filteredCache.removeIf(entry -> !entry.getProgramType().equalsIgnoreCase(type));
 		}
 		
+		// Remove entries that don't have covers.
+		filteredCache.removeIf(entry -> entry.getBestCover(2160, 3840) == null);
+		
 		// Sort the filtered cache by the release year descending.
 		filteredCache.sort(Comparator.comparing(Entry::getReleaseYear).reversed());
 		

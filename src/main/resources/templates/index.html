@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html lang="da" xmlns:th="http://www.thymeleaf.org">
 <head>
-	<meta content="width=device-width, initial-scale=1, user-scalable=no" name="viewport"/>
+	<meta content="width=device-width, initial-scale=1" name="viewport"/>
 	<link rel="stylesheet" th:href="@{/css/index.css}"/>
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 	<link rel="shortcut icon" th:href="@{/img/favicon.ico}" type="image/x-icon"/>
@@ -12,6 +12,7 @@
 	<div class="grid">
 		<div class="entry" th:each="entry : ${entries}">
 			<a th:href="@{/entry/{id}(id=${entry.getId()})}">
+				<!-- Get the cover closest to 4K portrait resolution: -->
 				<img alt="Cover Image" th:src="@{${entry.getBestCover(2160, 3840)}}"/>
 			</a>
 		</div>
