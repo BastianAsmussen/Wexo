@@ -13,41 +13,31 @@ body {
 
 .container {
 	
-	display: grid;
-	grid-template-areas:
-		"title title title title"
-		"cover description description description "
-		"cover genres genres release-year"
-		"cover actors actors directors";
-	column-gap: 1rem;
-	width: 75%;
-	
-	/* Center the wrapper div. */
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
+	display: flex;
+	flex-direction: column;
 	align-items: center;
 }
 
-.cover {
+.grid {
 	
-	grid-area: cover;
+	display: grid;
+	grid-template-areas:
+		"back title title       title        title"
+		".    cover description .            ."
+		".    cover genres      release-year ."
+		".    cover actors      directors    .";
+	column-gap: 1rem;
+	width: 75%;
 }
 
-.cover img {
+.back {
 	
-	width: 25rem;
-	height: auto;
-	border: .0625rem solid white;
-	border-radius: 2.5%;
-	transition: all .5s ease;
-}
-
-.cover img:hover {
+	grid-area: back;
+	font-size: 3rem;
 	
-	transform: scale(1.1) translate(-10%, 5%);
-	box-shadow: 0 0 1rem 1rem rgba(0, 0, 0, .5);
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .title {
@@ -57,25 +47,30 @@ body {
 	font-weight: 700;
 }
 
+.description {
+	
+	grid-area: description;
+	font-size: 1rem;
+	font-weight: 400;
+	
+	margin: 0;
+}
+
+.description p {
+	
+	padding-inline: 2rem;
+}
+
 .release-year {
 	
 	grid-area: release-year;
 	font-size: 1rem;
-	font-weight: 700;
+	font-weight: 400;
 }
 
-.release-year p {
+.release-year a {
 	
-	font-size: 1.25rem;
-	font-weight: 400;
-	margin-left: 1rem;
-}
-
-.description {
-	
-	grid-area: description;
-	font-size: 1.25rem;
-	font-weight: 400;
+	padding: 2rem;
 }
 
 .genres {
@@ -99,9 +94,24 @@ body {
 	font-weight: 400;
 }
 
-.empty {
+.cover {
 	
-	grid-area: empty;
+	grid-area: cover;
+}
+
+.cover img {
+	
+	width: 25rem;
+	height: auto;
+	border: .0625rem solid white;
+	border-radius: 2.5%;
+	transition: all .5s ease;
+}
+
+.cover img:hover {
+	
+	transform: scale(1.1) translate(-10%);
+	box-shadow: 0 0 1rem 1rem rgba(0, 0, 0, .5);
 }
 
 ul {
@@ -111,8 +121,19 @@ ul {
 	list-style-type: none;
 }
 
-ul li {
+li {
 	
 	margin-right: 1rem;
-	flex-basis: 25%;
+	flex-basis: 30%;
+}
+
+a {
+	
+	color: white;
+	text-decoration: none;
+}
+
+a:hover {
+	
+	text-decoration: underline;
 }

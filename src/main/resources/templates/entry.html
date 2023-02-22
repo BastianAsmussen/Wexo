@@ -1,45 +1,59 @@
-<!DOCTYPE html>
-<html lang="da"
-	  xmlns="http://www.w3.org/1999/xhtml"
-	  xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE HTML>
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
 <head>
-	<link rel="stylesheet" th:href="@{/css/entry.css}" type="text/css"/>
+	<meta content="width=device-width, initial-scale=1, user-scalable=no" name="viewport"/>
+	<link rel="stylesheet" th:href="@{/css/entry.css}"/>
 	<link rel="shortcut icon" th:href="@{/img/favicon.ico}" type="image/x-icon"/>
+	<script src="https://kit.fontawesome.com/670fd15d39.js" crossorigin="anonymous"></script>
 	<title>WEXO</title>
 </head>
 <body>
-	<div class="container">
+<div class="container">
+	<div class="grid">
+		<div class="back">
+			<a th:href="@{/}">
+				<i class="fa-solid fa-circle-arrow-left"></i>
+			</a>
+		</div>
 		<div class="cover">
-			<img alt="Cover Image" th:src="@{${entry.getBestCover(1080, 1920)}}"/>
+			<img alt="Cover Image" th:src="@{${entry.getBestCover(2160, 3840)}}"/>
 		</div>
 		<div class="title">
 			<h1 th:text="${entry.getTitle()}"/>
 		</div>
-		<div class="release-year">
-			<h2>Udgivelses År</h2>
-			<p th:text="${entry.getReleaseYear()}"/>
-		</div>
 		<div class="description">
+			<h2>Beskrivelse</h2>
 			<p th:text="${entry.getDescription()}"/>
 		</div>
 		<div class="genres">
 			<h2>Genre</h2>
-			<ul th:each="genre : ${entry.getGenres()}">
-				<li th:text="${genre}"/>
+			<ul>
+				<li th:each="genre : ${entry.getGenres()}">
+					<a th:href="'/?genre=' + ${genre.toLowerCase()}" th:text="${genre}"/>
+				</li>
 			</ul>
+		</div>
+		<div class="release-year">
+			<h2>Udgivelses År</h2>
+			<a th:href="'/?year=' + ${entry.getReleaseYear()}" th:text="${entry.getReleaseYear()}"/>
 		</div>
 		<div class="actors">
 			<h2>Skuespillere</h2>
-			<ul th:each="actor : ${entry.getActors()}">
-				<li th:text="${actor}"/>
+			<ul>
+				<li th:each="actor : ${entry.getActors()}">
+					<a th:href="'/?actor=' + ${actor.toLowerCase()}" th:text="${actor}"/>
+				</li>
 			</ul>
 		</div>
 		<div class="directors">
 			<h2>Instruktører</h2>
-			<ul th:each="director : ${entry.getDirectors()}">
-				<li th:text="${director}"/>
+			<ul>
+				<li th:each="director : ${entry.getDirectors()}">
+					<a th:href="'/?director=' + ${director.toLowerCase()}" th:text="${director}"/>
+				</li>
 			</ul>
 		</div>
 	</div>
+</div>
 </body>
 </html>

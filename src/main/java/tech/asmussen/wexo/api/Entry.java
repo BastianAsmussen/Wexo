@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static tech.asmussen.wexo.WEXOApplication.LOGGER;
 
@@ -30,48 +31,65 @@ public class Entry {
 	
 	public String getBestCover(int width, int height) {
 		
-		// Get the cover closest to the requested dimensions.
-		String bestCover = null;
+		Map<String, List<Integer>> bestCovers = new HashMap<>(); // URL -> [width, height]
 		
-		for (String url : covers.keySet()) {
+		final double aspectRatio = getAspectRatio(width, height);
+		
+		// Get the cover with the closest aspect ratio.
+		String bestCover = null;
+		double bestDifference = Double.MAX_VALUE;
+		
+		for (String cover : covers.keySet()) {
 			
-			int coverWidth = covers.get(url).get(0);
-			int coverHeight = covers.get(url).get(1);
+			List<Integer> dimensions = covers.get(cover);
 			
-			if (coverWidth >= width && coverHeight >= height) {
+			if (dimensions.size() != 2) {
 				
-				if (bestCover == null) {
-					
-					bestCover = url;
-					
-				} else {
-					
-					int bestWidth = covers.get(bestCover).get(0);
-					int bestHeight = covers.get(bestCover).get(1);
-					
-					if (coverWidth < bestWidth && coverHeight < bestHeight) {
-						
-						bestCover = url;
-					}
-				}
+				LOGGER.warn("Cover dimensions for {} are not 2!", cover);
+				
+				continue;
+			}
+			
+			int coverWidth = dimensions.get(0);
+			int coverHeight = dimensions.get(1);
+			
+			double coverAspectRatio = getAspectRatio(coverWidth, coverHeight);
+			double difference = Math.abs(aspectRatio - coverAspectRatio);
+			
+			if (difference < bestDifference) {
+				
+				bestDifference = difference;
+				bestCover = cover;
+				
+				bestCovers.put(cover, List.of(coverWidth, coverHeight));
 			}
 		}
 		
-		// If no cover was found, return the first one.
-		if (bestCover == null) {
+		// Get the cover with the highest resolution.
+		int bestWidth = 0;
+		int bestHeight = 0;
+		
+		for (String cover : bestCovers.keySet()) {
 			
-			LOGGER.warn("No cover found for entry {} with dimensions {}x{}!", id, width, height);
+			List<Integer> dimensions = bestCovers.get(cover);
 			
-			if (!covers.isEmpty()) {
+			int coverWidth = dimensions.get(0);
+			int coverHeight = dimensions.get(1);
+			
+			if (coverWidth > bestWidth && coverHeight > bestHeight) {
 				
-				bestCover = covers.keySet().iterator().next();
+				bestWidth = coverWidth;
+				bestHeight = coverHeight;
 				
-			} else {
-				
-				LOGGER.warn("No covers found for entry {}!", id);
+				bestCover = cover;
 			}
 		}
 		
 		return bestCover;
+	}
+	
+	private double getAspectRatio(int width, int height) {
+		
+		return (double) width / (double) height;
 	}
 }

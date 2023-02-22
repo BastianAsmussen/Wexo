@@ -20,11 +20,14 @@ public class WebController {
 	public String index(Model model,
 	                    @RequestParam(value = "start", defaultValue = "1") int start,
 	                    @RequestParam(value = "end", defaultValue = "100") int end,
+	                    @RequestParam(value = "search", defaultValue = "all") String search,
 	                    @RequestParam(value = "genre", defaultValue = "all") String genre,
-	                    @RequestParam(value = "type", defaultValue = "all") String type,
-						@RequestParam(value = "search", defaultValue = "all") String search) {
-		
-		List<Entry> entries = WEXOApplication.getRestInstance().getActiveCache(start, end, genre, type, search);
+	                    @RequestParam(value = "year", defaultValue = "-1") int year,
+	                    @RequestParam(value = "actor", defaultValue = "all") String actor,
+	                    @RequestParam(value = "director", defaultValue = "all") String director,
+	                    @RequestParam(value = "type", defaultValue = "all") String type)
+	{
+		List<Entry> entries = WEXOApplication.getRestInstance().getActiveCache(start, end, search, genre, year, actor, director, type);
 		
 		HashMap<String, Integer> genres = new HashMap<>(); // A list of genres and the number of entries in each. (Genre -> Count)
 		HashMap<String, String> coverArt = new HashMap<>(); // A list of URLs to use as cover art for each genre. (Genre -> URL)
@@ -58,7 +61,7 @@ public class WebController {
 			// If the genre doesn't have a cover art URL, add it.
 			if (!coverArt.containsKey(entry.getGenres().get(0))) {
 				
-				coverArt.put(entry.getGenres().get(0), entry.getBestCover(720,  640));
+				coverArt.put(entry.getGenres().get(0), entry.getBestCover(720, 640));
 			}
 		}
 		

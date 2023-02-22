@@ -1,0 +1,20 @@
+:root {
+	
+	--background-color: #36393E;
+}
+
+body {
+	
+	font-family: 'Roboto', sans-serif;
+	font-size: 1.5rem;
+	background: var(--background-color);
+	color: white;
+}
+
+.center {
+	
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}

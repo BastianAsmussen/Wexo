@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -197,7 +198,8 @@ public class REST {
 		
 		for (Entry entry : activeCache) {
 			
-			if (entry.getId().equalsIgnoreCase(id)) return entry;
+			if (entry.getId().equalsIgnoreCase(id))
+				return entry;
 		}
 		
 		return null;
@@ -208,10 +210,18 @@ public class REST {
 		return activeCache;
 	}
 	
-	public ArrayList<Entry> getActiveCache(int from, int to, String genre, String type, String search) {
-		
+	public ArrayList<Entry> getActiveCache(int from,
+	                                       int to,
+	                                       String search,
+	                                       String genre,
+	                                       int year,
+	                                       String actor,
+	                                       String director,
+	                                       String type)
+	{
 		// Make sure the range is valid.
-		if (from < 0 || to < 0 || from > to) return null;
+		if (from < 0 || to < 0 || from > to)
+			return null;
 		
 		// Make sure the range is within the cache.
 		to = Math.min(to, activeCache.size());
@@ -241,12 +251,40 @@ public class REST {
 			filteredCache.removeIf(entry -> !pattern.matcher(String.join(",", entry.getGenres())).find());
 		}
 		
+		// If the year is not "all" or empty, filter by the year.
+		if (year > 0) {
+			
+			// If the year is not "all" or empty, filter by the year.
+			filteredCache.removeIf(entry -> entry.getReleaseYear() != year);
+		}
+		
+		// If the actor is not "all" or empty, filter by the actor.
+		if (!actor.equalsIgnoreCase("all") && !actor.isEmpty()) {
+			
+			// If the actor is not "all" or empty, filter by the actor.
+			Pattern pattern = Pattern.compile(Pattern.quote(actor), Pattern.CASE_INSENSITIVE);
+			
+			filteredCache.removeIf(entry -> !pattern.matcher(String.join(",", entry.getActors())).find());
+		}
+		
+		// If the director is not "all" or empty, filter by the director.
+		if (!director.equalsIgnoreCase("all") && !director.isEmpty()) {
+			
+			// If the director is not "all" or empty, filter by the director.
+			Pattern pattern = Pattern.compile(Pattern.quote(director), Pattern.CASE_INSENSITIVE);
+			
+			filteredCache.removeIf(entry -> !pattern.matcher(String.join(",", entry.getDirectors())).find());
+		}
+		
 		// If the program type isn't "all" or empty, filter by the program type.
 		if (!type.equalsIgnoreCase("all") && !type.isEmpty()) {
 			
 			// If the type is not "all" or empty, filter by the type.
 			filteredCache.removeIf(entry -> !entry.getProgramType().equalsIgnoreCase(type));
 		}
+		
+		// Sort the filtered cache by the release year descending.
+		filteredCache.sort(Comparator.comparing(Entry::getReleaseYear).reversed());
 		
 		return new ArrayList<>(filteredCache);
 	}
