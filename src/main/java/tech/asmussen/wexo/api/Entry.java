@@ -2,10 +2,8 @@ package tech.asmussen.wexo.api;
 
 import lombok.Data;
 
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 @Data
 public class Entry {
@@ -52,7 +50,7 @@ public class Entry {
 			// Get the aspect ratio of the cover.
 			double coverAspectRatio = getAspectRatio(coverWidth, coverHeight);
 			
-			// If the cover is larger than the best cover, and the aspect ratio is in the correct range, set it as the best cover.
+			// If the cover is larger than the best cover, and the aspect ratio is within 25% of the original aspect ratio, set it as the best cover.
 			final double aspectRatioRange = 0.25;
 			
 			if (coverWidth > bestCoverWidth

@@ -20,7 +20,7 @@ import static tech.asmussen.wexo.WEXOApplication.LOGGER;
 
 public class REST {
 	
-	public static final int TOTAL_ITEMS = 10_000;
+	public static final int TOTAL_ITEMS = 9_000;
 	public static final int MAX_ITEMS_PER_REQUEST = 1_000;
 	
 	public static final String BASE_URL = "https://feed.entertainment.tv.theplatform.eu/f/jGxigC/bb-all-pas?form=json&lang=da";

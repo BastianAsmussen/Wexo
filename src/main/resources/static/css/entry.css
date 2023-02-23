@@ -33,11 +33,23 @@ body {
 .back {
 	
 	grid-area: back;
-	font-size: 3rem;
 	
 	display: flex;
 	align-items: center;
 	justify-content: center;
+}
+
+.back img {
+	
+	width: 5rem;
+	height: auto;
+	
+	transition: all .2s ease;
+}
+
+.back img:hover {
+	
+	transform: scale(1.1);
 }
 
 .title {

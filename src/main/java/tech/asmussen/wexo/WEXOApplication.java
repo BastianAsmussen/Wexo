@@ -38,8 +38,8 @@ public class WEXOApplication {
 				
 			} catch (InterruptedException ignored) { }
 			
-			// 15 minutes in milliseconds.
-			final int updateInterval = 900_000;
+			// 15 minutes in milliseconds. 15m * 60s * 1.000ms = 900.000ms
+			final int updateInterval = 15 * 60 * 1_000;
 			
 			rest = new REST(args[0]);
 			
@@ -50,8 +50,9 @@ public class WEXOApplication {
 				try {
 					
 					// If our cache is up-to-date, and the cache size isn't less than the total items, we don't need to update it.
-					if (rest.getLastUpdated() > (System.currentTimeMillis() - updateInterval) && !rest.getActiveCache().isEmpty()) {
-						
+					if (rest.getLastUpdated() > (System.currentTimeMillis() - updateInterval)
+							&& rest.getActiveCache().size() > REST.TOTAL_ITEMS)
+					{
 						LOGGER.info("The cache is up to date, skipping update...");
 						
 						Thread.sleep(updateInterval);
@@ -63,7 +64,7 @@ public class WEXOApplication {
 					
 					for (int i = 1; i < REST.TOTAL_ITEMS; i += REST.MAX_ITEMS_PER_REQUEST) {
 						
-						final int end = i + REST.MAX_ITEMS_PER_REQUEST - 1;
+						int end = i + REST.MAX_ITEMS_PER_REQUEST - 1;
 						
 						LOGGER.info("Fetching item indices from {} to {}...", formatter.format(i), formatter.format(end));
 						
@@ -92,7 +93,12 @@ public class WEXOApplication {
 		updateThread.setDaemon(true);
 		updateThread.start();
 		
-		// Start the Spring Application on the main thread.
+		Thread serverThread = Thread.currentThread();
+		
+		serverThread.setName("Server Thread");
+		serverThread.setUncaughtExceptionHandler((t, e) -> LOGGER.error("Uncaught exception in {}, the thread has been stopped!", t.getName(), e));
+		
+		// Start the server instance on the main thread.
 		SpringApplication.run(WEXOApplication.class, args);
 	}
 	

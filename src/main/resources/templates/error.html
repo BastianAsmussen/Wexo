@@ -1,13 +1,25 @@
 <!DOCTYPE HTML>
 <html lang="da" xmlns:th="http://www.thymeleaf.org">
 <head>
+	<meta content="width=device-width, initial-scale=1" name="viewport"/>
 	<link rel="stylesheet" th:href="@{/css/error.css}"/>
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 	<link rel="shortcut icon" th:href="@{/img/favicon.ico}" type="image/x-icon"/>
-	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
 	<title>WEXO</title>
 </head>
 <body>
-	<h1 class="center">Der skete en fejl på vores ende, prøv igen senere!</h1>
+	<div class="container">
+		<div class="grid">
+			<div class="icon">
+				<img alt="Error Icon" th:src="@{/img/icons/error.svg}"/>
+			</div>
+			<div class="title">
+				<p>Der skete en fejl,</p>
+				<p>prøv igen senere!</p>
+			</div>
+			<div class="message">
+				<p th:text="${cause}"/>
+			</div>
+		</div>
+	</div>
 </body>
 </html>
