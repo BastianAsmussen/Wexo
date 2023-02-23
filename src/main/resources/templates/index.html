@@ -7,7 +7,57 @@
 	<title>WEXO</title>
 </head>
 <body>
+<!-- TODO: Implement cookies to store the user's selected theme, search query, and applied filters. -->
 <div class="navbar">
+	<div class="misc">
+		<ul>
+			<li>
+				<!-- Home Button / Logo -->
+				<a class="home" th:href="@{/}">
+					<img alt="Home Icon" th:src="@{/img/logo-light.svg}"/>
+				</a>
+			</li>
+			<li>
+				<!--
+				Search Form (/?search=query)
+				TODO: Search Query Memory
+				-->
+				<div class="search-container">
+					<form action="/" method="get" class="search-form">
+						<input name="search" placeholder="Søg..." type="text"/>
+						<button type="submit">
+							<img alt="Search Icon" th:src="@{/img/icons/search.svg}"/>
+						</button>
+					</form>
+				</div>
+			</li>
+		</ul>
+	</div>
+	
+	<div class="data">
+		<ul>
+			<li>
+				<!-- Filters Button -->
+				<button class="filters">
+					<img alt="Filters Icon" th:src="@{/img/icons/filter.svg}"/>
+				</button>
+				
+				<!-- TODO: Filters Menu -->
+			</li>
+			<li>
+				<!-- Theme Button -->
+				<button class="theme">
+					<img alt="Theme Icon" th:src="@{/img/icons/moon.svg}"/>
+				</button>
+			</li>
+			<li>
+				<!-- Login Button -->
+				<button class="login">
+					<img alt="Login Icon" th:src="@{/img/icons/user.svg}"/>
+				</button>
+			</li>
+		</ul>
+	</div>
 </div>
 
 <div class="container">

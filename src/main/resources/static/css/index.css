@@ -1,7 +1,8 @@
 :root {
 	
-	--background-color: #36393E;
 	--main-color: #5865F2;
+	--secondary-color: #474A51;
+	--background-color: #36393E;
 }
 
 body {
@@ -13,6 +14,164 @@ body {
 	color: white;
 }
 
+/* Navigation Bar: */
+.navbar {
+	
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	
+	position: fixed;
+	top: 0;
+	left: 0;
+	
+	width: 100%;
+	height: 5rem;
+	
+	background: var(--background-color);
+	box-shadow: 0 0 1rem 0 rgba(0, 0, 0, .5);
+	
+	z-index: 100;
+}
+
+.navbar ul {
+	
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+
+.misc {
+	
+	width: 75%;
+	margin-top: 1rem;
+}
+
+.misc li {
+	
+	float: left;
+}
+
+.navbar li a {
+	
+	display: block;
+	color: white;
+	text-align: center;
+	padding: 1rem 1.5rem;
+	text-decoration: none;
+}
+
+.navbar .home img {
+	
+	width: 7.5rem;
+	height: auto;
+	
+	/* Center the logo in the navigation bar horizontally. */
+	position: absolute;
+	top: 50%;
+	transform: translate(0, -50%);
+}
+
+.search-container {
+	
+	/* Center the search bar in the navigation bar horizontally and vertically. */
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.search-form {
+	
+	display: flex;
+	align-items: center;
+	
+	width: 30rem;
+	height: 1rem;
+	
+	border-radius: 4rem;
+	padding: 1rem 1.5rem;
+	
+	background: white;
+	color: black;
+	box-shadow: 0 0 1rem 0 rgba(0, 0, 0, .5);
+}
+
+.search-form input {
+	
+	width: 100%;
+	border: none;
+	outline: none;
+	
+	background: transparent;
+}
+
+/* Searchbar icon and button: */
+.search-form button {
+	
+	border: none;
+	outline: none;
+	
+	background: transparent;
+	cursor: pointer;
+	
+	/* Align the button to the right. */
+	margin-left: auto;
+	padding: 0;
+}
+
+.search-form img {
+	
+	width: 2rem;
+	height: auto;
+}
+
+.data {
+	
+	width: 10%;
+	height: 1rem;
+	
+	position: absolute;
+	top: 50%;
+	right: 1%;
+	transform: translate(-1%, -50%);
+	
+	display: flex;
+	justify-content: left;
+	
+	border-radius: 4rem;
+	padding: 1rem 1.25rem;
+	
+	background: var(--secondary-color);
+	color: white;
+	box-shadow: 0 0 1rem 0 rgba(0, 0, 0, .5);
+}
+
+.data li {
+	
+	float: left;
+}
+
+.data button {
+	
+	border: none;
+	outline: none;
+	
+	background: transparent;
+	cursor: pointer;
+	
+	/* Align the button to the right. */
+	margin-left: auto;
+	padding: 0;
+}
+
+.data img {
+	
+	width: 1rem;
+	height: auto;
+}
+
+/* Entries: */
 .container {
 	
 	position: absolute;
@@ -28,7 +187,7 @@ body {
 	grid-gap: 2rem;
 	
 	width: 75%;
-	margin-top: 5rem;
+	margin-top: 8.5rem;
 }
 
 @media only screen and (max-width: 600px) {
