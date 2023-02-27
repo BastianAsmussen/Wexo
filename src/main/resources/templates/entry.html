@@ -7,52 +7,52 @@
 	<title>WEXO</title>
 </head>
 <body>
-<div class="container">
-	<div class="grid">
-		<div class="back">
-			<a th:href="@{/}">
-				<img alt="Back Icon" th:src="@{/img/icons/arrow.svg}"/>
-			</a>
-		</div>
-		<div class="cover">
-			<img alt="Cover Image" th:src="@{${entry.getBestCover(2160, 3840)}}"/>
-		</div>
-		<div class="title">
-			<h1 th:text="${entry.getTitle()}"/>
-		</div>
-		<div class="description">
-			<h2>Beskrivelse</h2>
-			<p th:text="${entry.getDescription()}"/>
-		</div>
-		<div class="genres">
-			<h2>Genre</h2>
-			<ul>
-				<li th:each="genre : ${entry.getGenres()}">
-					<a th:href="'/?genre=' + ${genre.toLowerCase()}" th:text="${genre}"/>
-				</li>
-			</ul>
-		</div>
-		<div class="release-year">
-			<h2>Udgivelses År</h2>
-			<a th:href="'/?year=' + ${entry.getReleaseYear()}" th:text="${entry.getReleaseYear()}"/>
-		</div>
-		<div class="actors">
-			<h2>Skuespillere</h2>
-			<ul>
-				<li th:each="actor : ${entry.getActors()}">
-					<a th:href="'/?actor=' + ${actor.toLowerCase()}" th:text="${actor}"/>
-				</li>
-			</ul>
-		</div>
-		<div class="directors">
-			<h2>Instruktører</h2>
-			<ul>
-				<li th:each="director : ${entry.getDirectors()}">
-					<a th:href="'/?director=' + ${director.toLowerCase()}" th:text="${director}"/>
-				</li>
-			</ul>
+	<div class="container">
+		<div class="grid">
+			<div class="back">
+				<a th:href="@{/}">
+					<img alt="Back Icon" th:src="@{/img/icons/arrow.svg}"/>
+				</a>
+			</div>
+			<div class="cover">
+				<img alt="Cover Image" th:src="@{${entry.getBestCover(2160, 3840)}}"/>
+			</div>
+			<div class="title">
+				<h1 th:text="${entry.getTitle()}"/>
+			</div>
+			<div class="description">
+				<h2>Beskrivelse</h2>
+				<p th:text="${entry.getDescription()}"/>
+			</div>
+			<div class="genres">
+				<h2>Genre</h2>
+				<ul>
+					<li th:each="genre : ${entry.getGenres()}">
+						<a th:href="'/?genre=' + ${genre.toLowerCase()}" th:text="${genre}"/>
+					</li>
+				</ul>
+			</div>
+			<div class="release-year">
+				<h2>Udgivelses År</h2>
+				<a th:href="'/?year=' + ${entry.getReleaseYear()}" th:text="${entry.getReleaseYear()}"/>
+			</div>
+			<div class="actors">
+				<h2>Skuespillere</h2>
+				<ul>
+					<li th:each="actor : ${entry.getActors()}">
+						<a th:href="'/?actor=' + ${actor.toLowerCase()}" th:text="${actor}"/>
+					</li>
+				</ul>
+			</div>
+			<div class="directors">
+				<h2>Instruktører</h2>
+				<ul>
+					<li th:each="director : ${entry.getDirectors()}">
+						<a th:href="'/?director=' + ${director.toLowerCase()}" th:text="${director}"/>
+					</li>
+				</ul>
+			</div>
 		</div>
 	</div>
-</div>
 </body>
 </html>

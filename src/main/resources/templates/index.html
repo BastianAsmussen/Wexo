@@ -4,12 +4,11 @@
 	<meta content="width=device-width, initial-scale=1" name="viewport"/>
 	<link rel="stylesheet" th:href="@{/css/index.css}"/>
 	<link rel="shortcut icon" th:href="@{/img/favicon.ico}" type="image/x-icon"/>
+	<script th:src="@{/js/search.js}" defer></script>
 	<title>WEXO</title>
 </head>
 <body>
-<!-- TODO: Implement cookies to store the user's selected theme, search query, and applied filters. -->
-<div class="navbar">
-	<div class="misc">
+	<div class="navbar">
 		<ul>
 			<li>
 				<!-- Home Button / Logo -->
@@ -17,14 +16,11 @@
 					<img alt="Home Icon" th:src="@{/img/logo-light.svg}"/>
 				</a>
 			</li>
+			
 			<li>
-				<!--
-				Search Form (/?search=query)
-				TODO: Search Query Memory
-				-->
 				<div class="search-container">
 					<form action="/" method="get" class="search-form">
-						<input name="search" placeholder="Søg..." type="text"/>
+						<input id="query" name="search" placeholder="Søg..." type="text"/>
 						<button type="submit">
 							<img alt="Search Icon" th:src="@{/img/icons/search.svg}"/>
 						</button>
@@ -34,41 +30,15 @@
 		</ul>
 	</div>
 	
-	<div class="data">
-		<ul>
-			<li>
-				<!-- Filters Button -->
-				<button class="filters">
-					<img alt="Filters Icon" th:src="@{/img/icons/filter.svg}"/>
-				</button>
-				
-				<!-- TODO: Filters Menu -->
-			</li>
-			<li>
-				<!-- Theme Button -->
-				<button class="theme">
-					<img alt="Theme Icon" th:src="@{/img/icons/moon.svg}"/>
-				</button>
-			</li>
-			<li>
-				<!-- Login Button -->
-				<button class="login">
-					<img alt="Login Icon" th:src="@{/img/icons/user.svg}"/>
-				</button>
-			</li>
-		</ul>
-	</div>
-</div>
-
-<div class="container">
-	<div class="grid">
-		<div class="entry" th:each="entry : ${entries}">
-			<a th:href="@{/entry/{id}(id=${entry.getId()})}">
-				<!-- Get the cover closest to 4K portrait resolution: -->
-				<img alt="Cover Image" th:src="@{${entry.getBestCover(2160, 3840)}}"/>
-			</a>
+	<div class="container">
+		<div class="grid">
+			<div class="entry" th:each="entry : ${entries}">
+				<a th:href="@{/entry/{id}(id=${entry.getId()})}">
+					<!-- Get the cover closest to 4K portrait resolution: -->
+					<img th:alt="${entry.getTitle()}" th:src="@{${entry.getBestCover(2160, 3840)}}"/>
+				</a>
+			</div>
 		</div>
 	</div>
-</div>
 </body>
 </html>

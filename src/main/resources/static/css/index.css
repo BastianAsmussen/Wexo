@@ -14,6 +14,12 @@ body {
 	color: white;
 }
 
+a {
+	
+	color: var(--main-color);
+	text-decoration: none;
+}
+
 /* Navigation Bar: */
 .navbar {
 	
@@ -41,17 +47,6 @@ body {
 	overflow: hidden;
 }
 
-.misc {
-	
-	width: 75%;
-	margin-top: 1rem;
-}
-
-.misc li {
-	
-	float: left;
-}
-
 .navbar li a {
 	
 	display: block;
@@ -66,7 +61,6 @@ body {
 	width: 7.5rem;
 	height: auto;
 	
-	/* Center the logo in the navigation bar horizontally. */
 	position: absolute;
 	top: 50%;
 	transform: translate(0, -50%);
@@ -103,6 +97,8 @@ body {
 	border: none;
 	outline: none;
 	
+	font-size: 1rem;
+	
 	background: transparent;
 }
 
@@ -123,51 +119,6 @@ body {
 .search-form img {
 	
 	width: 2rem;
-	height: auto;
-}
-
-.data {
-	
-	width: 10%;
-	height: 1rem;
-	
-	position: absolute;
-	top: 50%;
-	right: 1%;
-	transform: translate(-1%, -50%);
-	
-	display: flex;
-	justify-content: left;
-	
-	border-radius: 4rem;
-	padding: 1rem 1.25rem;
-	
-	background: var(--secondary-color);
-	color: white;
-	box-shadow: 0 0 1rem 0 rgba(0, 0, 0, .5);
-}
-
-.data li {
-	
-	float: left;
-}
-
-.data button {
-	
-	border: none;
-	outline: none;
-	
-	background: transparent;
-	cursor: pointer;
-	
-	/* Align the button to the right. */
-	margin-left: auto;
-	padding: 0;
-}
-
-.data img {
-	
-	width: 1rem;
 	height: auto;
 }
 
