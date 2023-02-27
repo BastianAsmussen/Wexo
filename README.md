@@ -15,6 +15,8 @@ Her er dokumentationen for backend delen af hjemmesiden.
 - API'en er RESTful, så jeg har programmeret en REST klient fra bunden til at modtage data.
 - Nyt data bliver hentet som råt `JSON`
 
+<hr>
+
 # Frontend Dokumentation
 Her er dokumentationen for frontend delen af hjemmesiden.
 
